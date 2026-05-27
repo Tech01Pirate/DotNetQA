@@ -1,0 +1,2131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React Q&A Study Guide — Expanded Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0f14;
+    --surface: #141820;
+    --surface-2: #1a1f2b;
+    --border: #252b3a;
+    --text: #e2e6ef;
+    --text-dim: #8891a5;
+    --accent-hooks: #38bdf8;
+    --accent-hooks-bg: rgba(56, 189, 248, 0.08);
+    --accent-context: #a78bfa;
+    --accent-context-bg: rgba(167, 139, 250, 0.08);
+    --accent-redux: #fb923c;
+    --accent-redux-bg: rgba(251, 146, 60, 0.08);
+    --accent-general: #34d399;
+    --accent-general-bg: rgba(52, 211, 153, 0.08);
+    --accent-basics: #f472b6;
+    --accent-basics-bg: rgba(244, 114, 182, 0.08);
+    --accent-advanced: #facc15;
+    --accent-advanced-bg: rgba(250, 204, 21, 0.08);
+    --accent-tricky: #f87171;
+    --accent-tricky-bg: rgba(248, 113, 113, 0.08);
+    --code-bg: #0d1117;
+    --correct: #22c55e;
+    --wrong: #ef4444;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  header .badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+
+  header h1 {
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1.15;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #38bdf8, #a78bfa, #fb923c, #f472b6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  header p {
+    color: var(--text-dim);
+    font-size: 16px;
+    font-weight: 300;
+    max-width: 580px;
+    margin: 0 auto;
+  }
+
+  .stats-bar {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    border-radius: 8px;
+  }
+
+  .stat span { font-weight: 600; }
+  .stat .hooks-c { color: var(--accent-hooks); }
+  .stat .context-c { color: var(--accent-context); }
+  .stat .redux-c { color: var(--accent-redux); }
+  .stat .basics-c { color: var(--accent-basics); }
+  .stat .advanced-c { color: var(--accent-advanced); }
+  .stat .tricky-c { color: var(--accent-tricky); }
+
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .filter-btn {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .filter-btn:hover { border-color: #555; color: var(--text); }
+  .filter-btn.active { border-color: var(--accent-hooks); color: var(--text); background: var(--surface-2); }
+  .filter-btn[data-cat="hooks"].active { border-color: var(--accent-hooks); box-shadow: 0 0 12px rgba(56,189,248,0.15); }
+  .filter-btn[data-cat="context"].active { border-color: var(--accent-context); box-shadow: 0 0 12px rgba(167,139,250,0.15); }
+  .filter-btn[data-cat="redux"].active { border-color: var(--accent-redux); box-shadow: 0 0 12px rgba(251,146,60,0.15); }
+  .filter-btn[data-cat="basics"].active { border-color: var(--accent-basics); box-shadow: 0 0 12px rgba(244,114,182,0.15); }
+  .filter-btn[data-cat="advanced"].active { border-color: var(--accent-advanced); box-shadow: 0 0 12px rgba(250,204,21,0.15); }
+  .filter-btn[data-cat="tricky"].active { border-color: var(--accent-tricky); box-shadow: 0 0 12px rgba(248,113,113,0.15); }
+  .filter-btn[data-cat="all"].active { border-color: var(--accent-general); box-shadow: 0 0 12px rgba(52,211,153,0.15); }
+
+  .qa-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  .qa-card:hover { border-color: #3a3f4e; }
+  .qa-card[data-category="hooks"] .qa-header .cat-dot { background: var(--accent-hooks); }
+  .qa-card[data-category="context"] .qa-header .cat-dot { background: var(--accent-context); }
+  .qa-card[data-category="redux"] .qa-header .cat-dot { background: var(--accent-redux); }
+  .qa-card[data-category="basics"] .qa-header .cat-dot { background: var(--accent-basics); }
+  .qa-card[data-category="advanced"] .qa-header .cat-dot { background: var(--accent-advanced); }
+  .qa-card[data-category="tricky"] .qa-header .cat-dot { background: var(--accent-tricky); }
+
+  .qa-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 20px 24px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .qa-header .q-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    min-width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .qa-header .q-content { flex: 1; }
+
+  .qa-header .q-text {
+    font-size: 15.5px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  .qa-header .q-meta {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 8px;
+  }
+
+  .cat-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .cat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+  }
+
+  .diff-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+
+  .qa-header .chevron {
+    color: var(--text-dim);
+    font-size: 18px;
+    transition: transform 0.3s;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .qa-card.open .qa-header .chevron { transform: rotate(180deg); }
+
+  .qa-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+
+  .qa-card.open .qa-answer { max-height: 5000px; }
+
+  .qa-answer-inner {
+    padding: 0 24px 24px 74px;
+    color: var(--text);
+    font-size: 14.5px;
+    line-height: 1.8;
+    font-weight: 300;
+  }
+
+  .qa-answer-inner strong {
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .qa-answer-inner .dotnet-note {
+    margin-top: 14px;
+    padding: 12px 16px;
+    background: rgba(52, 211, 153, 0.06);
+    border-left: 3px solid var(--accent-general);
+    border-radius: 0 8px 8px 0;
+    font-size: 13.5px;
+    color: var(--text-dim);
+  }
+
+  .qa-answer-inner .dotnet-note::before {
+    content: '🔁 .NET Analogy: ';
+    font-weight: 600;
+    color: var(--accent-general);
+  }
+
+  .qa-answer-inner .tricky-note {
+    margin-top: 14px;
+    padding: 12px 16px;
+    background: rgba(248, 113, 113, 0.06);
+    border-left: 3px solid var(--accent-tricky);
+    border-radius: 0 8px 8px 0;
+    font-size: 13.5px;
+    color: var(--text-dim);
+  }
+
+  .qa-answer-inner .tricky-note::before {
+    content: '⚠️ Gotcha: ';
+    font-weight: 600;
+    color: var(--accent-tricky);
+  }
+
+  .qa-answer-inner code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    padding: 2px 7px;
+    border-radius: 5px;
+    color: #c9d1d9;
+  }
+
+  .qa-answer-inner pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 14px 0;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.65;
+    color: #c9d1d9;
+  }
+
+  .qa-answer-inner ul, .qa-answer-inner ol {
+    padding-left: 20px;
+    margin: 8px 0;
+  }
+
+  .qa-answer-inner li {
+    margin-bottom: 4px;
+  }
+
+  .controls {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+  }
+
+  .ctrl-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .ctrl-btn:hover { color: var(--text); border-color: #555; }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 28px; }
+    .qa-answer-inner { padding-left: 24px; }
+    .container { padding: 24px 14px 60px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="badge">Tailored for .NET Fullstack → React</div>
+    <h1>React Q&A<br>Study Guide</h1>
+    <p>65 curated questions across React Basics, Hooks, Context API, Redux, Advanced Internals & Tricky Gotchas — with .NET analogies</p>
+    <div class="stats-bar">
+      <div class="stat"><span class="basics-c">10</span> React Basics</div>
+      <div class="stat"><span class="hooks-c">16</span> Hooks</div>
+      <div class="stat"><span class="context-c">10</span> Context API</div>
+      <div class="stat"><span class="redux-c">14</span> Redux</div>
+      <div class="stat"><span class="advanced-c">8</span> Advanced</div>
+      <div class="stat"><span class="tricky-c">7</span> Tricky</div>
+    </div>
+  </header>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" data-cat="all">All (65)</button>
+    <button class="filter-btn" data-cat="basics">React Basics</button>
+    <button class="filter-btn" data-cat="hooks">Hooks</button>
+    <button class="filter-btn" data-cat="context">Context API</button>
+    <button class="filter-btn" data-cat="redux">Redux</button>
+    <button class="filter-btn" data-cat="advanced">Advanced</button>
+    <button class="filter-btn" data-cat="tricky">Tricky</button>
+  </div>
+
+  <div class="controls">
+    <button class="ctrl-btn" id="expandAll">↕ Expand All</button>
+    <button class="ctrl-btn" id="collapseAll">↕ Collapse All</button>
+  </div>
+
+  <div id="qa-list"></div>
+</div>
+
+<script>
+const catLabels = {
+  hooks: 'Hooks',
+  context: 'Context API',
+  redux: 'Redux',
+  basics: 'React Basics',
+  advanced: 'Advanced',
+  tricky: 'Tricky'
+};
+
+const questions = [
+
+  // ===== REACT BASICS (10) — NEW =====
+  {
+    id: 101, category: "basics", difficulty: "Basic",
+    q: "What is JSX and how does it differ from HTML?",
+    a: `<p><strong>JSX (JavaScript XML)</strong> is a syntax extension that lets you write HTML-like markup inside JavaScript. It's not valid HTML or JavaScript — it gets <strong>transpiled by Babel/SWC</strong> into <code>React.createElement()</code> calls.</p>
+<p><strong>Key differences from HTML:</strong></p>
+<ul>
+<li><code>class</code> → <code>className</code> (because <code>class</code> is a reserved word in JS).</li>
+<li><code>for</code> → <code>htmlFor</code>.</li>
+<li>Self-closing tags are mandatory: <code>&lt;img /&gt;</code>, <code>&lt;br /&gt;</code>.</li>
+<li>Inline styles use objects: <code>style={{ color: 'red' }}</code> not <code>style="color: red"</code>.</li>
+<li>You can embed JavaScript expressions with <code>{curly braces}</code>.</li>
+</ul>
+<pre>// JSX
+const element = &lt;h1 className="title"&gt;Hello, {name}!&lt;/h1&gt;;
+
+// What Babel produces:
+const element = React.createElement('h1',
+  { className: 'title' },
+  'Hello, ', name, '!'
+);</pre>
+<div class="dotnet-note">JSX is like Razor syntax (<code>@{ }</code>) in ASP.NET MVC/Blazor — it mixes markup and C# code. The key difference: Razor runs server-side while JSX is compiled to JavaScript at build time.</div>`
+  },
+  {
+    id: 102, category: "basics", difficulty: "Basic",
+    q: "What is the Virtual DOM and how does React's reconciliation work?",
+    a: `<p>The <strong>Virtual DOM (VDOM)</strong> is a lightweight, in-memory JavaScript object tree that mirrors the real DOM. When state changes:</p>
+<ol>
+<li><strong>React creates a new VDOM tree</strong> reflecting the new state.</li>
+<li><strong>Diffing</strong> — React compares the new VDOM with the previous one using its reconciliation algorithm.</li>
+<li><strong>Patching</strong> — only the differences are applied to the real DOM (minimal DOM operations).</li>
+</ol>
+<p><strong>Reconciliation rules:</strong></p>
+<ul>
+<li>Elements of <strong>different types</strong> produce different trees (old tree is destroyed).</li>
+<li>The <code>key</code> prop helps React identify which items in a list have changed, moved, or been removed.</li>
+<li>React compares <strong>same-type elements</strong> and only updates changed attributes.</li>
+</ul>
+<div class="dotnet-note">Think of the VDOM as an in-memory diff engine — like how Git computes deltas between commits. Only the "changed lines" (DOM nodes) are applied. In .NET terms, it's similar to how EF Core's Change Tracker detects modified properties and generates <code>UPDATE</code> SQL for only those columns.</div>`
+  },
+  {
+    id: 103, category: "basics", difficulty: "Basic",
+    q: "What is the difference between controlled and uncontrolled components?",
+    a: `<p><strong>Controlled components:</strong> React state is the single source of truth for the input value. Every keystroke calls a handler that updates state, which re-renders the input.</p>
+<pre>// Controlled
+const [name, setName] = useState('');
+&lt;input value={name} onChange={e => setName(e.target.value)} /&gt;</pre>
+<p><strong>Uncontrolled components:</strong> The DOM itself holds the value. You read it via a <code>ref</code> when needed (e.g., on submit).</p>
+<pre>// Uncontrolled
+const inputRef = useRef();
+&lt;input ref={inputRef} defaultValue="initial" /&gt;
+// Read: inputRef.current.value</pre>
+<p><strong>When to use each:</strong></p>
+<ul>
+<li><strong>Controlled</strong> — when you need instant validation, conditional disabling, formatted inputs, or the value drives other UI. This is the default recommendation.</li>
+<li><strong>Uncontrolled</strong> — simple forms, file inputs (<code>&lt;input type="file" /&gt;</code> is always uncontrolled), or integrating with non-React libraries.</li>
+</ul>
+<div class="dotnet-note">Controlled ≈ two-way data binding in Blazor (<code>@bind</code>). Uncontrolled ≈ using <code>document.getElementById</code> in traditional ASP.NET WebForms — the DOM owns the value.</div>`
+  },
+  {
+    id: 104, category: "basics", difficulty: "Basic",
+    q: "What are keys in React and why are they important?",
+    a: `<p>Keys are <strong>unique identifiers</strong> you assign to elements in a list so React can track which items changed, were added, or removed during reconciliation.</p>
+<pre>// ✅ Use stable, unique IDs
+{users.map(user =>
+  &lt;UserCard key={user.id} user={user} /&gt;
+)}
+
+// ❌ Don't use array index as key (usually)
+{users.map((user, index) =>
+  &lt;UserCard key={index} user={user} /&gt;  // bugs with reorder/delete
+)}</pre>
+<p><strong>Why index is bad:</strong> When items are reordered, inserted, or deleted, index-based keys cause React to re-use the wrong DOM elements — leading to stale state, broken animations, and input value swaps.</p>
+<p><strong>Index is okay when:</strong> the list is static, never reordered, and items have no local state.</p>
+<div class="dotnet-note">Keys serve the same purpose as primary keys in a database — they uniquely identify each record so the system knows which row to update, insert, or delete rather than rebuilding the entire table.</div>`
+  },
+  {
+    id: 105, category: "basics", difficulty: "Basic",
+    q: "What is lifting state up? When and why do you do it?",
+    a: `<p><strong>Lifting state up</strong> means moving shared state to the <strong>closest common ancestor</strong> of the components that need it, then passing it down as props.</p>
+<pre>// Before: Each input manages its own state independently
+// After: Parent owns the state, children are controlled
+
+function TemperatureConverter() {
+  const [celsius, setCelsius] = useState(0);
+  const fahrenheit = (celsius * 9/5) + 32;
+
+  return (
+    &lt;&gt;
+      &lt;TempInput label="Celsius" value={celsius}
+        onChange={setCelsius} /&gt;
+      &lt;TempInput label="Fahrenheit" value={fahrenheit}
+        onChange={f => setCelsius((f - 32) * 5/9)} /&gt;
+    &lt;/&gt;
+  );
+}</pre>
+<p><strong>When to lift:</strong> Two or more sibling components need to reflect the same changing data. <strong>Don't over-lift</strong> — if only one component uses the state, keep it local.</p>
+<div class="dotnet-note">This is like moving a shared variable from a private field in two separate classes to a parent orchestrator. In .NET terms, it's similar to promoting a local variable to a ViewModel property that multiple partial views can bind to.</div>`
+  },
+  {
+    id: 106, category: "basics", difficulty: "Intermediate",
+    q: "What are Error Boundaries and how do you implement them?",
+    a: `<p>Error Boundaries are React components that <strong>catch JavaScript errors in their child component tree</strong>, log them, and display a fallback UI instead of crashing the entire app.</p>
+<pre>class ErrorBoundary extends React.Component {
+  state = { hasError: false, error: null };
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    logErrorToService(error, errorInfo); // Send to Sentry, etc.
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return &lt;h2&gt;Something went wrong.&lt;/h2&gt;;
+    }
+    return this.props.children;
+  }
+}
+
+// Usage
+&lt;ErrorBoundary&gt;
+  &lt;MyRiskyComponent /&gt;
+&lt;/ErrorBoundary&gt;</pre>
+<p><strong>Important:</strong> Error boundaries are <strong>class components only</strong> (no hook equivalent yet). They do <strong>NOT</strong> catch errors in event handlers, async code, SSR, or in the boundary itself. For production, use the <code>react-error-boundary</code> library which provides a functional API.</p>
+<div class="dotnet-note">Error boundaries are like <code>try/catch</code> blocks wrapping sections of your UI — similar to ASP.NET's exception middleware or Blazor's <code>&lt;ErrorBoundary&gt;</code> component that shows fallback content when a child component throws.</div>`
+  },
+  {
+    id: 107, category: "basics", difficulty: "Intermediate",
+    q: "What are React Portals and when would you use them?",
+    a: `<p>Portals let you <strong>render a child into a different DOM node</strong> outside of the parent component's DOM hierarchy, while keeping it inside the React tree (events still bubble up).</p>
+<pre>import { createPortal } from 'react-dom';
+
+function Modal({ children, isOpen }) {
+  if (!isOpen) return null;
+  return createPortal(
+    &lt;div className="modal-overlay"&gt;
+      &lt;div className="modal-content"&gt;{children}&lt;/div&gt;
+    &lt;/div&gt;,
+    document.getElementById('modal-root') // outside #root
+  );
+}</pre>
+<p><strong>Use cases:</strong> Modals/dialogs, tooltips, floating menus, toast notifications — anything that needs to <strong>visually escape</strong> its parent's <code>overflow: hidden</code> or <code>z-index</code> stacking context.</p>
+<p><strong>Key insight:</strong> Even though the DOM node is elsewhere, React events still propagate through the React component tree — a click inside a Portal will trigger a parent's <code>onClick</code> handler.</p>
+<div class="dotnet-note">Similar to rendering a partial view into a different layout section in ASP.NET MVC (<code>@RenderSection</code>), or Blazor's <code>RenderFragment</code> being projected into a different part of the page.</div>`
+  },
+  {
+    id: 108, category: "basics", difficulty: "Basic",
+    q: "What is the difference between props and state?",
+    a: `<p><strong>Props</strong> (properties) and <strong>state</strong> both hold data that influences rendering, but they serve different purposes:</p>
+<ul>
+<li><strong>Props</strong> — passed <strong>from parent to child</strong>. Immutable from the child's perspective. Think of them as function arguments.</li>
+<li><strong>State</strong> — managed <strong>within the component</strong>. Mutable (via setState/useState). Think of it as the component's private, local data.</li>
+</ul>
+<pre>// Props: parent passes data down
+&lt;UserCard name="Alice" role="admin" /&gt;
+
+// State: component manages its own data
+function Counter() {
+  const [count, setCount] = useState(0);
+  return &lt;button onClick={() => setCount(c => c + 1)}&gt;{count}&lt;/button&gt;;
+}</pre>
+<p><strong>Golden rule:</strong> If a component doesn't need to change a value, it should receive it as a prop. If it owns and modifies the value, it's state.</p>
+<div class="dotnet-note">Props ≈ constructor parameters or method arguments in C#. State ≈ private fields with property setters. Props flow down (like readonly parameters); state is internal and triggers re-renders (like <code>INotifyPropertyChanged</code> in WPF/MVVM).</div>`
+  },
+  {
+    id: 109, category: "basics", difficulty: "Intermediate",
+    q: "How does conditional rendering work in React? What patterns are common?",
+    a: `<p>React renders different UI based on conditions using standard JavaScript expressions inside JSX:</p>
+<pre>// Pattern 1: Ternary (inline if-else)
+{isLoggedIn ? &lt;Dashboard /&gt; : &lt;LoginForm /&gt;}
+
+// Pattern 2: Logical AND (show or nothing)
+{hasNotifications && &lt;NotificationBadge count={count} /&gt;}
+
+// Pattern 3: Early return
+function UserProfile({ user }) {
+  if (!user) return &lt;p&gt;Loading...&lt;/p&gt;;
+  return &lt;h1&gt;{user.name}&lt;/h1&gt;;
+}
+
+// Pattern 4: Variable assignment
+let content;
+if (status === 'loading') content = &lt;Spinner /&gt;;
+else if (status === 'error') content = &lt;ErrorMsg /&gt;;
+else content = &lt;DataTable data={data} /&gt;;
+return &lt;div&gt;{content}&lt;/div&gt;;</pre>
+<div class="tricky-note">The <code>&&</code> pattern has a gotcha: <code>{count && &lt;Badge /&gt;}</code> will render <code>0</code> on screen when count is 0, because 0 is falsy but a valid React render. Fix: <code>{count > 0 && &lt;Badge /&gt;}</code>.</div>`
+  },
+  {
+    id: 110, category: "basics", difficulty: "Intermediate",
+    q: "What is React.lazy and Suspense? How does code splitting work?",
+    a: `<p><code>React.lazy</code> lets you <strong>dynamically import</strong> a component so it's loaded only when rendered — reducing the initial bundle size. <code>Suspense</code> provides a <strong>fallback UI</strong> while the lazy component loads.</p>
+<pre>import { lazy, Suspense } from 'react';
+
+const AdminPanel = lazy(() => import('./AdminPanel'));
+
+function App() {
+  return (
+    &lt;Suspense fallback={&lt;Spinner /&gt;}&gt;
+      {isAdmin && &lt;AdminPanel /&gt;}
+    &lt;/Suspense&gt;
+  );
+}</pre>
+<p><strong>Best practices:</strong></p>
+<ul>
+<li>Wrap lazy components at <strong>route boundaries</strong> for the biggest impact.</li>
+<li>You can nest multiple lazy components inside one Suspense, or use multiple Suspense boundaries for granular loading states.</li>
+<li>Combine with <strong>React Router</strong> for route-based code splitting.</li>
+</ul>
+<div class="dotnet-note">Similar to lazy loading assemblies in .NET with <code>Assembly.LoadFrom()</code> or Blazor's lazy-loaded assemblies via <code>&lt;LazyAssemblyLoader&gt;</code>. The user downloads only the code they need, when they need it.</div>`
+  },
+
+  // ===== REACT BASICS (continued) — ROUND 3 =====
+  {
+    id: 111, category: "basics", difficulty: "Basic",
+    q: "What are React Fragments and why would you use them?",
+    a: `<p><strong>Fragments</strong> let you group multiple elements <strong>without adding an extra DOM node</strong>. Without Fragments, you'd need a wrapper <code>&lt;div&gt;</code> which can break CSS layouts (Flexbox/Grid) or produce invalid HTML.</p>
+<pre>// Short syntax
+return (
+  &lt;&gt;
+    &lt;h1&gt;Title&lt;/h1&gt;
+    &lt;p&gt;Description&lt;/p&gt;
+  &lt;/&gt;
+);
+
+// Full syntax (needed when using keys)
+return items.map(item =&gt; (
+  &lt;React.Fragment key={item.id}&gt;
+    &lt;dt&gt;{item.term}&lt;/dt&gt;
+    &lt;dd&gt;{item.definition}&lt;/dd&gt;
+  &lt;/React.Fragment&gt;
+));</pre>
+<p><strong>Key rule:</strong> The short syntax <code>&lt;&gt;...&lt;/&gt;</code> does <strong>not</strong> support the <code>key</code> prop — use <code>&lt;React.Fragment key={...}&gt;</code> when iterating.</p>
+<div class="dotnet-note">Similar to Blazor's implicit fragment behavior — Blazor components can return multiple root elements without a wrapper. In MVC Razor, you'd use <code>@:</code> to output raw HTML without a container.</div>`
+  },
+  {
+    id: 112, category: "basics", difficulty: "Basic",
+    q: "What are Synthetic Events in React? How do they differ from native DOM events?",
+    a: `<p><strong>Synthetic Events</strong> are React's cross-browser wrapper around native browser events. They provide a <strong>consistent API</strong> regardless of browser differences.</p>
+<pre>function Button() {
+  const handleClick = (e) =&gt; {
+    // e is a SyntheticEvent, not a native MouseEvent
+    e.preventDefault();
+    console.log(e.nativeEvent); // access the underlying native event
+  };
+  return &lt;button onClick={handleClick}&gt;Click&lt;/button&gt;;
+}</pre>
+<p><strong>Key differences from native events:</strong></p>
+<ul>
+<li>React uses <strong>event delegation</strong> — all events are attached to the root, not individual DOM nodes.</li>
+<li>Events are <strong>camelCase</strong> (<code>onClick</code>, not <code>onclick</code>).</li>
+<li>You pass a <strong>function reference</strong>, not a string: <code>onClick={handler}</code>, not <code>onclick="handler()"</code>.</li>
+<li><code>e.stopPropagation()</code> stops propagation in the React tree, not the DOM tree.</li>
+</ul>
+<div class="dotnet-note">Similar to how ASP.NET abstracts HTTP requests through <code>HttpContext</code> — you get a consistent API regardless of whether you're running on Kestrel, IIS, or Nginx. The underlying transport differs, but the interface is uniform.</div>`
+  },
+  {
+    id: 113, category: "basics", difficulty: "Intermediate",
+    q: "How does event handling work in React? What are common patterns?",
+    a: `<p>React handles events declaratively in JSX. Common patterns include:</p>
+<pre>// 1. Inline handler (fine for simple logic)
+&lt;button onClick={() =&gt; setCount(c =&gt; c + 1)}&gt;+1&lt;/button&gt;
+
+// 2. Named handler (preferred for readability)
+const handleSubmit = (e) =&gt; {
+  e.preventDefault();
+  saveData(formData);
+};
+&lt;form onSubmit={handleSubmit}&gt;...&lt;/form&gt;
+
+// 3. Passing arguments
+&lt;button onClick={() =&gt; deleteItem(item.id)}&gt;Delete&lt;/button&gt;
+
+// 4. Event + parameter via currying
+const handleChange = (field) =&gt; (e) =&gt; {
+  setForm(prev =&gt; ({ ...prev, [field]: e.target.value }));
+};
+&lt;input onChange={handleChange('email')} /&gt;</pre>
+<p><strong>Performance tip:</strong> Inline arrow functions create a new function reference each render. This usually doesn't matter, but if passing to a memoized child, use <code>useCallback</code> or the React Compiler will handle it automatically.</p>
+<div class="dotnet-note">Event handling in React is like subscribing to events in C#: <code>button.Click += HandleClick;</code>. The currying pattern is similar to partial application with closures in C#: <code>Action&lt;string&gt; handler = field =&gt; e =&gt; ...</code>.</div>`
+  },
+  {
+    id: 114, category: "basics", difficulty: "Basic",
+    q: "What is the component lifecycle in functional components with Hooks?",
+    a: `<p>Functional components don't have lifecycle methods, but <strong>Hooks map to lifecycle phases</strong>:</p>
+<pre>function MyComponent({ userId }) {
+  // "Constructor" — runs during render
+  const [data, setData] = useState(null);
+
+  // "componentDidMount" — empty deps
+  useEffect(() =&gt; {
+    initializeAnalytics();
+  }, []);
+
+  // "componentDidUpdate" — with deps
+  useEffect(() =&gt; {
+    fetchUser(userId).then(setData);
+  }, [userId]);
+
+  // "componentWillUnmount" — cleanup return
+  useEffect(() =&gt; {
+    const ws = new WebSocket(url);
+    return () =&gt; ws.close(); // cleanup on unmount
+  }, []);
+
+  // "render"
+  return &lt;div&gt;{data?.name}&lt;/div&gt;;
+}</pre>
+<p><strong>Mental model shift:</strong> Don't think in lifecycle terms. Think in <strong>synchronization</strong> — "this effect synchronizes with these dependencies." React recommends thinking about effects as synchronizing with external systems, not as responding to lifecycle events.</p>
+<div class="dotnet-note">In Blazor, you have <code>OnInitializedAsync</code> (mount), <code>OnParametersSetAsync</code> (update), and <code>IDisposable.Dispose</code> (unmount). The shift from lifecycle to synchronization is unique to React — Blazor still uses the lifecycle model.</div>`
+  },
+  {
+    id: 115, category: "basics", difficulty: "Intermediate",
+    q: "How do you style React components? What are the main approaches?",
+    a: `<p>React offers multiple styling strategies, each with trade-offs:</p>
+<pre>// 1. CSS Modules — scoped class names, no conflicts
+import styles from './Button.module.css';
+&lt;button className={styles.primary}&gt;Click&lt;/button&gt;
+
+// 2. Inline styles — objects, no pseudo-classes
+&lt;div style={{ color: 'red', fontSize: '16px' }}&gt;Hello&lt;/div&gt;
+
+// 3. styled-components (CSS-in-JS)
+const Button = styled.button\`
+  background: \${props =&gt; props.primary ? 'blue' : 'gray'};
+  color: white;
+  &amp;:hover { opacity: 0.8; }
+\`;
+
+// 4. Tailwind CSS — utility classes
+&lt;button className="bg-blue-500 text-white px-4 py-2 hover:opacity-80"&gt;
+  Click
+&lt;/button&gt;</pre>
+<p><strong>2026 trend:</strong> Tailwind CSS has become the dominant approach. CSS-in-JS libraries like styled-components are declining due to runtime performance costs. CSS Modules remain solid for traditional projects.</p>
+<div class="dotnet-note">CSS Modules ≈ scoped CSS in Blazor (<code>.razor.css</code> files). Inline styles ≈ setting <code>style</code> attributes in Razor. There's no direct .NET equivalent to Tailwind, but it's like having a utility library of pre-built helper methods you compose together.</div>`
+  },
+  {
+    id: 116, category: "basics", difficulty: "Basic",
+    q: "What is the difference between a React element and a React component?",
+    a: `<p>This distinction is fundamental but often confused:</p>
+<ul>
+<li><strong>React Element</strong> — a plain JavaScript object describing what to render. It's the <strong>output</strong> of JSX. Immutable and cheap to create.</li>
+<li><strong>React Component</strong> — a function (or class) that <strong>returns</strong> React elements. It's a template/blueprint that can receive props and manage state.</li>
+</ul>
+<pre>// Element — a plain object (what JSX produces)
+const element = &lt;h1&gt;Hello&lt;/h1&gt;;
+// Equivalent to: { type: 'h1', props: { children: 'Hello' } }
+
+// Component — a function that returns elements
+function Greeting({ name }) {
+  return &lt;h1&gt;Hello, {name}!&lt;/h1&gt;;  // returns an element
+}
+
+// Using a component produces an element
+const el = &lt;Greeting name="Alice" /&gt;;
+// { type: Greeting, props: { name: 'Alice' } }</pre>
+<div class="dotnet-note">A React Component is like a C# class definition. A React Element is like an instance of that class. The component is the blueprint; the element is what React actually renders — similar to the distinction between a <code>Type</code> and an <code>object</code> in .NET.</div>`
+  },
+  {
+    id: 117, category: "basics", difficulty: "Intermediate",
+    q: "What is React.StrictMode and what does it do?",
+    a: `<p><code>StrictMode</code> is a development-only tool that wraps part of your app and activates <strong>additional checks and warnings</strong>:</p>
+<pre>&lt;React.StrictMode&gt;
+  &lt;App /&gt;
+&lt;/React.StrictMode&gt;</pre>
+<p><strong>What it does (development only — zero effect in production):</strong></p>
+<ul>
+<li><strong>Double-renders</strong> components to detect impure renders (functions that produce different output for the same input).</li>
+<li><strong>Double-invokes effects</strong> (mount → unmount → mount) to surface missing cleanup logic.</li>
+<li><strong>Warns about deprecated APIs</strong> (legacy string refs, findDOMNode, legacy context).</li>
+<li><strong>Detects unexpected side effects</strong> during the render phase.</li>
+</ul>
+<p><strong>Important:</strong> The double-invocation only happens in development. If your code breaks under StrictMode, you have a real bug — fix the code, don't remove StrictMode.</p>
+<div class="dotnet-note">Similar to running your .NET app with <code>ASPNETCORE_ENVIRONMENT=Development</code> which enables detailed error pages, validation warnings, and the developer exception page. StrictMode is React's equivalent of "development mode with extra guardrails."</div>`
+  },
+  {
+    id: 118, category: "basics", difficulty: "Intermediate",
+    q: "What is list virtualization (windowing)? When and why would you use it?",
+    a: `<p>Virtualization renders <strong>only the visible items</strong> in a large list, instead of mounting thousands of DOM nodes. Libraries like <code>react-window</code> and <code>@tanstack/react-virtual</code> implement this.</p>
+<pre>import { FixedSizeList } from 'react-window';
+
+function VirtualList({ items }) {
+  return (
+    &lt;FixedSizeList
+      height={600}
+      width="100%"
+      itemCount={items.length}
+      itemSize={50}
+    &gt;
+      {({ index, style }) =&gt; (
+        &lt;div style={style}&gt;{items[index].name}&lt;/div&gt;
+      )}
+    &lt;/FixedSizeList&gt;
+  );
+}</pre>
+<p><strong>When to use:</strong> Lists with <strong>hundreds or thousands</strong> of items. A regular <code>.map()</code> rendering 10,000 rows creates 10,000 DOM nodes, causing jank, slow scrolling, and high memory usage.</p>
+<p><strong>Without virtualization:</strong> 10,000 items ≈ 10,000 DOM nodes. <strong>With virtualization:</strong> only ~20 visible items are in the DOM at any time.</p>
+<div class="dotnet-note">Similar to pagination or <code>IAsyncEnumerable</code> streaming in .NET — you don't load the entire dataset into memory. Also like Blazor's built-in <code>&lt;Virtualize&gt;</code> component which renders only visible items in a scrollable list.</div>`
+  },
+
+  // ===== HOOKS (16) — ORIGINAL =====
+  {
+    id: 1, category: "hooks", difficulty: "Basic",
+    q: "What are React Hooks and why were they introduced?",
+    a: `<p>React Hooks are functions that let you <strong>"hook into"</strong> React state and lifecycle features from functional components. Introduced in <strong>React 16.8</strong>, they were created to solve three main problems:</p>
+<ul>
+<li><strong>Reusing stateful logic</strong> between components was hard with class components (HOCs and render props led to "wrapper hell").</li>
+<li><strong>Complex components</strong> became hard to understand when lifecycle methods contained unrelated logic bundled together.</li>
+<li><strong>Classes confused people</strong> — the <code>this</code> keyword, binding event handlers, and class boilerplate made React harder to learn.</li>
+</ul>
+<p>With Hooks, all features of React can be used without writing class components.</p>
+<div class="dotnet-note">Think of Hooks like extension methods in C#. They let you "attach" behavior (state, effects) to a function without needing inheritance (class components). Just as C# moved from heavy OOP to more functional patterns (LINQ, pattern matching), React moved from classes to functions + Hooks.</div>`
+  },
+  {
+    id: 2, category: "hooks", difficulty: "Basic",
+    q: "What are the Rules of Hooks? Why do they exist?",
+    a: `<p>There are two fundamental rules:</p>
+<ul>
+<li><strong>Only call Hooks at the top level</strong> — never inside loops, conditions, or nested functions.</li>
+<li><strong>Only call Hooks from React functions</strong> — either from functional components or from custom Hooks.</li>
+</ul>
+<p>These rules exist because React <strong>relies on call order</strong> to track which state belongs to which <code>useState</code> call. If you put a Hook inside an <code>if</code> block, the call order changes between renders and React loses track.</p>
+<pre>// ❌ WRONG — conditional Hook
+if (isLoggedIn) {
+  const [user, setUser] = useState(null);
+}
+
+// ✅ CORRECT — call at top, use condition inside
+const [user, setUser] = useState(null);
+useEffect(() => {
+  if (isLoggedIn) fetchUser();
+}, [isLoggedIn]);</pre>
+<div class="dotnet-note">This is unlike C# where you can declare variables anywhere. Think of it as similar to how Dependency Injection in ASP.NET Core must register services in a specific order during startup — the container relies on the order of registration.</div>`
+  },
+  {
+    id: 3, category: "hooks", difficulty: "Intermediate",
+    q: "Explain the difference between useState and useReducer. When would you choose one over the other?",
+    a: `<p><code>useState</code> is for simple, independent state values. <code>useReducer</code> is for complex state logic where the next state depends on the previous one, or when multiple sub-values are updated together.</p>
+<pre>// useState — simple counter
+const [count, setCount] = useState(0);
+
+// useReducer — complex state with related transitions
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'increment': return { ...state, count: state.count + 1 };
+    case 'decrement': return { ...state, count: state.count - 1 };
+    case 'reset':     return { count: 0 };
+    default: return state;
+  }
+};
+const [state, dispatch] = useReducer(reducer, { count: 0 });</pre>
+<p><strong>Choose useReducer when:</strong> state transitions are complex, multiple values are interdependent, you want to centralize state logic, or you're passing dispatch down to deep children (dispatch identity is stable).</p>
+<div class="dotnet-note">If <code>useState</code> is like a simple property with a setter, <code>useReducer</code> is like the Command Pattern or a state machine — similar to how MediatR handlers process commands and return new state in a CQRS setup.</div>`
+  },
+  {
+    id: 4, category: "hooks", difficulty: "Intermediate",
+    q: "What is the useEffect cleanup function and when does it run?",
+    a: `<p>The cleanup function is the <strong>return value</strong> of your effect callback. It runs in two scenarios:</p>
+<ul>
+<li><strong>Before every re-execution</strong> of the effect (when dependencies change).</li>
+<li><strong>When the component unmounts.</strong></li>
+</ul>
+<pre>useEffect(() => {
+  const subscription = api.subscribe(userId);
+  return () => {
+    subscription.unsubscribe();
+  };
+}, [userId]);</pre>
+<p>Common uses: unsubscribing from WebSockets, clearing timers (<code>clearInterval</code>), cancelling fetch requests via <code>AbortController</code>, removing event listeners.</p>
+<div class="dotnet-note">This is React's version of <code>IDisposable.Dispose()</code>. Just as you implement Dispose to clean up unmanaged resources in C#, the cleanup function releases subscriptions and side effects.</div>`
+  },
+  {
+    id: 5, category: "hooks", difficulty: "Advanced",
+    q: "What is the difference between useEffect and useLayoutEffect?",
+    a: `<p>Both accept the same signature, but they fire at different times:</p>
+<ul>
+<li><strong>useEffect</strong> — runs <strong>asynchronously after</strong> the browser has painted. Non-blocking. Use for most side effects.</li>
+<li><strong>useLayoutEffect</strong> — runs <strong>synchronously after</strong> DOM mutations but <strong>before</strong> paint. Use when you need to measure/mutate DOM before the user sees it.</li>
+</ul>
+<pre>useLayoutEffect(() => {
+  const rect = ref.current.getBoundingClientRect();
+  setPosition({ top: rect.top, left: rect.left });
+}, [dependency]);</pre>
+<p><strong>Rule of thumb:</strong> Start with <code>useEffect</code>. Only switch to <code>useLayoutEffect</code> if you see visual flicker caused by DOM measurements happening after paint.</p>
+<div class="dotnet-note">Think of <code>useEffect</code> as a background task (<code>Task.Run</code>) and <code>useLayoutEffect</code> as synchronous middleware that modifies the response body before it's flushed to the client.</div>`
+  },
+  {
+    id: 6, category: "hooks", difficulty: "Advanced",
+    q: "Explain useMemo and useCallback. How do they differ and when should you use each?",
+    a: `<p>Both are memoization hooks, but they memoize different things:</p>
+<ul>
+<li><strong>useMemo</strong> — memoizes a <strong>computed value</strong>.</li>
+<li><strong>useCallback</strong> — memoizes a <strong>function reference</strong>. It's syntactic sugar for <code>useMemo(() => fn, deps)</code>.</li>
+</ul>
+<pre>const sorted = useMemo(() =>
+  items.sort((a, b) => a.price - b.price), [items]
+);
+
+const handleClick = useCallback((id) => {
+  dispatch({ type: 'SELECT', payload: id });
+}, [dispatch]);</pre>
+<p><strong>Don't over-use them.</strong> Memoization has its own cost (memory + comparison). Profile first.</p>
+<p><strong>Note:</strong> With the <strong>React Compiler</strong> (React 19+), manual memoization is becoming less necessary — the compiler auto-memoizes at build time.</p>
+<div class="dotnet-note">Similar to caching in .NET — <code>useMemo</code> is like <code>IMemoryCache</code> for computed values, and <code>useCallback</code> is like caching a delegate so downstream consumers get the same reference.</div>`
+  },
+  {
+    id: 7, category: "hooks", difficulty: "Intermediate",
+    q: "What is useRef and how does it differ from useState?",
+    a: `<p><code>useRef</code> returns a mutable <code>.current</code> property that persists across renders, but <strong>changing it does NOT trigger a re-render</strong>.</p>
+<p><strong>Common uses:</strong></p>
+<ul>
+<li>Accessing DOM elements: <code>&lt;input ref={inputRef} /&gt;</code></li>
+<li>Storing mutable values that shouldn't cause re-renders (previous values, timers, interval IDs).</li>
+<li>Tracking if a component is mounted.</li>
+</ul>
+<pre>const renderCount = useRef(0);
+useEffect(() => { renderCount.current += 1; });
+
+const inputRef = useRef(null);
+const focusInput = () => inputRef.current.focus();</pre>
+<div class="dotnet-note">Similar to a private field in a C# class — it holds mutable state but doesn't notify the UI. Like how a private <code>_timer</code> field in a Blazor component holds a reference without triggering <code>StateHasChanged()</code>.</div>`
+  },
+  {
+    id: 8, category: "hooks", difficulty: "Advanced",
+    q: "What are custom Hooks? What are the conventions and benefits?",
+    a: `<p>Custom Hooks are JavaScript functions whose name <strong>starts with "use"</strong> and that can call other Hooks inside them. They let you extract and reuse stateful logic.</p>
+<pre>function useFetch(url) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch(url, { signal: controller.signal })
+      .then(res => res.json())
+      .then(setData)
+      .catch(setError)
+      .finally(() => setLoading(false));
+    return () => controller.abort();
+  }, [url]);
+
+  return { data, loading, error };
+}
+
+const { data, loading } = useFetch('/api/users');</pre>
+<p><strong>Benefits:</strong> code reuse, separation of concerns, testability, and composability.</p>
+<div class="dotnet-note">Custom Hooks are analogous to reusable services in .NET DI. Instead of injecting <code>IHttpClientFactory</code> everywhere, you create a typed <code>UserService</code>. Similarly, instead of duplicating fetch logic, you create <code>useFetch</code>.</div>`
+  },
+  {
+    id: 9, category: "hooks", difficulty: "Intermediate",
+    q: "How does the dependency array in useEffect work? What happens with an empty array vs. no array?",
+    a: `<p>The dependency array controls <strong>when</strong> the effect re-runs:</p>
+<ul>
+<li><strong>No array</strong> — effect runs after <strong>every render</strong>.</li>
+<li><strong>Empty array <code>[]</code></strong> — effect runs <strong>once</strong> after initial render.</li>
+<li><strong>With dependencies <code>[a, b]</code></strong> — effect runs when <code>a</code> or <code>b</code> changes (shallow comparison via <code>Object.is</code>).</li>
+</ul>
+<pre>useEffect(() => { console.log('every render'); });
+useEffect(() => { fetchInitialData(); }, []);
+useEffect(() => { fetchUser(userId); }, [userId]);</pre>
+<p><strong>Common pitfall:</strong> Objects and arrays create new references every render. Either extract primitives, memoize with <code>useMemo</code>, or use a deep comparison custom hook.</p>`
+  },
+  {
+    id: 10, category: "hooks", difficulty: "Advanced",
+    q: "What are stale closures in React Hooks? How do you avoid them?",
+    a: `<p>A stale closure occurs when a function captures an <strong>old value</strong> of state because the dependency array doesn't include that variable.</p>
+<pre>// ❌ Stale closure: count is always 0
+useEffect(() => {
+  const id = setInterval(() => {
+    setCount(count + 1); // captured as 0
+  }, 1000);
+  return () => clearInterval(id);
+}, []);
+
+// ✅ Fix 1: functional updater
+setCount(prev => prev + 1);
+
+// ✅ Fix 2: add dependency
+}, [count]);
+
+// ✅ Fix 3: useRef for mutable latest value
+const countRef = useRef(count);
+countRef.current = count;</pre>
+<p>The <strong>functional updater pattern</strong> is the most common fix.</p>
+<div class="dotnet-note">In C#, closures capture variables by reference. In JavaScript, closures capture the value at creation time. React closures behave more like value captures.</div>`
+  },
+  {
+    id: 11, category: "hooks", difficulty: "Intermediate",
+    q: "How does React.memo relate to Hooks? When should you use it?",
+    a: `<p><code>React.memo</code> is a HOC that <strong>skips re-rendering</strong> if props haven't changed (shallow comparison). It works with Hooks to optimize performance:</p>
+<pre>const ExpensiveList = React.memo(({ items, onSelect }) => {
+  return items.map(item =>
+    &lt;div key={item.id} onClick={() => onSelect(item.id)}&gt;
+      {item.name}
+    &lt;/div&gt;
+  );
+});
+
+// Parent must stabilize props:
+const handleSelect = useCallback((id) => { setSelected(id); }, []);
+const sortedItems = useMemo(() => items.sort(compareFn), [items]);</pre>
+<p><strong>Use when:</strong> a component re-renders often with the same props. <strong>Don't use</strong> for components that almost always receive new props.</p>`
+  },
+  {
+    id: 12, category: "hooks", difficulty: "Advanced",
+    q: "What is useImperativeHandle and when would you use it?",
+    a: `<p><code>useImperativeHandle</code> customizes the ref value a parent receives. Used with <code>forwardRef</code> to expose a controlled API:</p>
+<pre>const FancyInput = forwardRef((props, ref) => {
+  const inputRef = useRef();
+  useImperativeHandle(ref, () => ({
+    focus: () => inputRef.current.focus(),
+    clear: () => { inputRef.current.value = ''; },
+  }));
+  return &lt;input ref={inputRef} {...props} /&gt;;
+});
+
+// Parent: ref.current.focus() works, ref.current.value doesn't</pre>
+<p>This promotes <strong>encapsulation</strong>. <strong>Note:</strong> In React 19, <code>ref</code> is a regular prop — <code>forwardRef</code> is no longer needed.</p>
+<div class="dotnet-note">Similar to defining a public interface on a C# class while keeping internals private.</div>`
+  },
+  {
+    id: 13, category: "hooks", difficulty: "Intermediate",
+    q: "How do you handle data fetching with Hooks? What patterns are recommended?",
+    a: `<p>The basic pattern uses <code>useEffect</code> + <code>useState</code>, but production apps should handle <strong>loading, error, race conditions, and cleanup</strong>:</p>
+<pre>function useUsers() {
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true);
+    fetch('/api/users', { signal: controller.signal })
+      .then(r => r.json())
+      .then(setData)
+      .catch(e => {
+        if (e.name !== 'AbortError') setError(e);
+      })
+      .finally(() => setLoading(false));
+    return () => controller.abort();
+  }, []);
+
+  return { data, error, loading };
+}</pre>
+<p><strong>Better alternatives:</strong> <strong>TanStack Query</strong> or <strong>SWR</strong> handle caching, revalidation, retry, and deduplication out of the box.</p>
+<div class="dotnet-note">Think of TanStack Query as the React equivalent of <code>IMemoryCache</code> + <code>HttpClient</code> + automatic revalidation.</div>`
+  },
+  {
+    id: 14, category: "hooks", difficulty: "Advanced",
+    q: "What is the useTransition hook and how does it relate to Concurrent React?",
+    a: `<p><code>useTransition</code> marks a state update as <strong>non-urgent</strong>, letting React keep the UI responsive during expensive renders.</p>
+<pre>const [isPending, startTransition] = useTransition();
+
+const handleChange = (e) => {
+  setInput(e.target.value); // Urgent
+  startTransition(() => {
+    setFilter(e.target.value); // Non-urgent
+  });
+};</pre>
+<p>React can <strong>interrupt</strong> the non-urgent render to handle urgent updates (like typing). <code>isPending</code> lets you show a loading indicator.</p>
+<div class="dotnet-note">Similar to using <code>Task.Run</code> or <code>BackgroundService</code> for heavy work while keeping the main thread responsive.</div>`
+  },
+  {
+    id: 15, category: "hooks", difficulty: "Advanced",
+    q: "What is useDeferredValue and how does it differ from useTransition?",
+    a: `<p><code>useDeferredValue</code> takes a value and returns a <strong>deferred version</strong> that may lag behind during urgent updates.</p>
+<pre>const deferredQuery = useDeferredValue(query);
+return (
+  &lt;&gt;
+    &lt;input value={query} onChange={e => setQuery(e.target.value)} /&gt;
+    &lt;HeavyFilteredList filter={deferredQuery} /&gt;
+  &lt;/&gt;
+);</pre>
+<p><strong>Key difference:</strong> <code>useTransition</code> wraps the <strong>setter call</strong>. <code>useDeferredValue</code> wraps the <strong>value</strong> — useful when you don't control the setter (e.g., it comes from a parent).</p>`
+  },
+  {
+    id: 16, category: "hooks", difficulty: "Intermediate",
+    q: "What is the useId hook and why was it added?",
+    a: `<p><code>useId</code> generates a <strong>stable, unique ID</strong> consistent between server and client rendering. Added in React 18 to solve SSR hydration mismatches.</p>
+<pre>function FormField({ label }) {
+  const id = useId();
+  return (
+    &lt;&gt;
+      &lt;label htmlFor={id}&gt;{label}&lt;/label&gt;
+      &lt;input id={id} /&gt;
+    &lt;/&gt;
+  );
+}</pre>
+<p><strong>Don't use it for:</strong> list keys, CSS selectors, or anything needing a human-readable string.</p>`
+  },
+
+  // ===== CONTEXT API (10) — ORIGINAL =====
+  {
+    id: 17, category: "context", difficulty: "Basic",
+    q: "What is the React Context API and what problem does it solve?",
+    a: `<p>The Context API provides a way to <strong>pass data through the component tree without prop drilling</strong>.</p>
+<p>It has three parts:</p>
+<ul>
+<li><code>React.createContext(defaultValue)</code> — creates a Context object.</li>
+<li><code>&lt;Context.Provider value={...}&gt;</code> — wraps the tree and supplies the value.</li>
+<li><code>useContext(Context)</code> — consumes the value in any child component.</li>
+</ul>
+<pre>const ThemeContext = createContext('light');
+
+function App() {
+  return (
+    &lt;ThemeContext.Provider value="dark"&gt;
+      &lt;Toolbar /&gt;
+    &lt;/ThemeContext.Provider&gt;
+  );
+}
+
+function ThemedButton() {
+  const theme = useContext(ThemeContext);
+  return &lt;button className={theme}&gt;Click&lt;/button&gt;;
+}</pre>
+<div class="dotnet-note">Very similar to DI's <code>IServiceProvider</code> in ASP.NET Core. The Provider is like <code>builder.Services.AddSingleton&lt;T&gt;(value)</code>, and <code>useContext</code> is like constructor injection.</div>`
+  },
+  {
+    id: 18, category: "context", difficulty: "Intermediate",
+    q: "What are the performance implications of Context? How does it cause re-renders?",
+    a: `<p>When the Provider's <code>value</code> changes, <strong>every component</strong> that calls <code>useContext</code> re-renders — even if only part of the value changed that the component doesn't use.</p>
+<pre>// ❌ Problem: new object every render
+&lt;UserContext.Provider value={{ user, theme, settings }}&gt;
+
+// ✅ Fix 1: Split into separate contexts
+// ✅ Fix 2: Memoize the value
+const value = useMemo(() => ({ user, theme }), [user, theme]);</pre>
+<p><strong>Key insight:</strong> Context uses <strong>reference equality</strong> (<code>Object.is</code>) to detect changes.</p>
+<div class="dotnet-note">Similar to how Blazor's cascading parameters trigger re-renders in all consuming components.</div>`
+  },
+  {
+    id: 19, category: "context", difficulty: "Intermediate",
+    q: "When should you use Context vs. prop drilling vs. a state management library?",
+    a: `<p><strong>Prop drilling</strong> — fine for 2–3 levels. Simple, explicit.</p>
+<p><strong>Context API</strong> — good for low-frequency updates: theme, locale, auth status, feature flags. Not ideal for rapidly changing state.</p>
+<p><strong>State management library (Redux, Zustand, Jotai)</strong> — choose when you need: middleware, time-travel debugging, complex interdependent state, or high-frequency granular subscriptions.</p>
+<p><strong>Rule of thumb:</strong> If you have 3+ contexts that change together and need middleware logic, you've outgrown Context.</p>`
+  },
+  {
+    id: 20, category: "context", difficulty: "Advanced",
+    q: "How would you combine useContext with useReducer for a scalable state pattern?",
+    a: `<p>This is the "<strong>poor man's Redux</strong>" pattern:</p>
+<pre>const StateContext = createContext();
+const DispatchContext = createContext();
+
+function AppProvider({ children }) {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  return (
+    &lt;StateContext.Provider value={state}&gt;
+      &lt;DispatchContext.Provider value={dispatch}&gt;
+        {children}
+      &lt;/DispatchContext.Provider&gt;
+    &lt;/StateContext.Provider&gt;
+  );
+}
+
+const useAppState = () => useContext(StateContext);
+const useAppDispatch = () => useContext(DispatchContext);</pre>
+<p><strong>Key insight:</strong> Separating state and dispatch into two contexts prevents components that only dispatch from re-rendering when state changes.</p>
+<div class="dotnet-note">This mirrors CQRS — separate read (StateContext) from write (DispatchContext).</div>`
+  },
+  {
+    id: 21, category: "context", difficulty: "Basic",
+    q: "What is the defaultValue in createContext and when is it used?",
+    a: `<p>The <code>defaultValue</code> is used <strong>only when there is no matching Provider above</strong> in the tree. It's a fallback, not an initial value.</p>
+<pre>const ThemeContext = createContext('light');
+// If no Provider wraps this component:
+const theme = useContext(ThemeContext); // 'light'</pre>
+<p>Useful for: testing in isolation, library components, and TypeScript type inference.</p>`
+  },
+  {
+    id: 22, category: "context", difficulty: "Intermediate",
+    q: "How do you test components that use Context?",
+    a: `<p>Wrap the component in a Provider with test-specific values:</p>
+<pre>test('shows user name from context', () => {
+  render(
+    &lt;UserContext.Provider value={{ name: 'Jane', role: 'admin' }}&gt;
+      &lt;UserProfile /&gt;
+    &lt;/UserContext.Provider&gt;
+  );
+  expect(screen.getByText('Jane')).toBeInTheDocument();
+});</pre>
+<p><strong>Tip:</strong> Create a test utility wrapper that provides all contexts with configurable defaults.</p>
+<div class="dotnet-note">Equivalent to overriding DI registrations in integration tests using <code>WebApplicationFactory&lt;T&gt;.WithWebHostBuilder</code>.</div>`
+  },
+  {
+    id: 23, category: "context", difficulty: "Advanced",
+    q: "How do you prevent unnecessary re-renders when using Context with complex objects?",
+    a: `<p>Several strategies:</p>
+<ul>
+<li><strong>Split contexts</strong> — separate frequently changing values from stable ones.</li>
+<li><strong>Memoize the value</strong> — use <code>useMemo</code> on the Provider value.</li>
+<li><strong>Create selector hooks</strong> — consume context in a custom hook.</li>
+</ul>
+<p><strong>Note:</strong> Unlike Redux's <code>useSelector</code>, there's no built-in way to subscribe to a "slice" of context. This is Context's main limitation for complex apps.</p>`
+  },
+  {
+    id: 24, category: "context", difficulty: "Intermediate",
+    q: "Can you nest multiple Context Providers? What are the patterns for composing them?",
+    a: `<p>Yes, providers can be nested. Common patterns:</p>
+<pre>// Pattern 1: Nesting (gets unwieldy)
+&lt;AuthProvider&gt;
+  &lt;ThemeProvider&gt;
+    &lt;LocaleProvider&gt;
+      &lt;App /&gt;
+
+// Pattern 2: Compose utility
+function ComposeProviders({ providers, children }) {
+  return providers.reduceRight(
+    (acc, [Provider, props]) =>
+      &lt;Provider {...props}&gt;{acc}&lt;/Provider&gt;, children
+  );
+}</pre>
+<div class="dotnet-note">Similar to ASP.NET middleware pipeline — each Provider wraps the next. The compose pattern is like <code>app.UseAuth().UseRouting().UseEndpoints()</code>.</div>`
+  },
+  {
+    id: 25, category: "context", difficulty: "Advanced",
+    q: "What is Context 'value instability' and how does it cause bugs?",
+    a: `<p>Value instability occurs when the Provider's <code>value</code> is a <strong>new object reference on every render</strong>, even though data hasn't changed.</p>
+<pre>// ❌ BUG: new object every render
+&lt;AuthContext.Provider value={{ user, setUser }}&gt;
+
+// ✅ FIX: memoize
+const authValue = useMemo(() => ({ user, setUser }), [user]);
+&lt;AuthContext.Provider value={authValue}&gt;</pre>
+<p><strong>Why <code>setUser</code> is safe:</strong> React guarantees state setter functions have a stable identity.</p>`
+  },
+  {
+    id: 26, category: "context", difficulty: "Intermediate",
+    q: "How does Context API compare to Redux for a senior .NET developer starting React?",
+    a: `<ul>
+<li><strong>Context API ≈ DI with Scoped/Singleton services.</strong> Built-in, zero deps. Limitation: no middleware, no devtools, no selective subscriptions.</li>
+<li><strong>Redux ≈ Event Sourcing + CQRS.</strong> Actions are events, reducers are event handlers, the store is a materialized view.</li>
+</ul>
+<p><strong>Start with Context</strong> for your first React project. Move to Redux or Zustand when you hit Context's limitations.</p>`
+  },
+
+  // ===== REDUX (14) — ORIGINAL =====
+  {
+    id: 27, category: "redux", difficulty: "Basic",
+    q: "What are the three core principles of Redux?",
+    a: `<ul>
+<li><strong>Single source of truth</strong> — entire app state in one store.</li>
+<li><strong>State is read-only</strong> — only change via dispatching actions.</li>
+<li><strong>Changes via pure functions</strong> — reducers take <code>(prevState, action)</code> and return new state.</li>
+</ul>
+<pre>// Action
+{ type: 'todos/add', payload: 'Learn Redux' }
+
+// Reducer
+function todosReducer(state = [], action) {
+  switch (action.type) {
+    case 'todos/add':
+      return [...state, { text: action.payload, done: false }];
+    default: return state;
+  }
+}</pre>
+<div class="dotnet-note">This maps directly to <strong>Event Sourcing</strong>: actions are domain events, reducers are event handlers, the store is a projection.</div>`
+  },
+  {
+    id: 28, category: "redux", difficulty: "Basic",
+    q: "What is Redux Toolkit (RTK) and why is it the recommended approach?",
+    a: `<p>RTK is the <strong>official, opinionated</strong> way to write Redux. It provides:</p>
+<ul>
+<li><code>configureStore</code> — store with good defaults.</li>
+<li><code>createSlice</code> — generates action creators and reducers.</li>
+<li><code>createAsyncThunk</code> — async with pending/fulfilled/rejected states.</li>
+<li>Built-in <strong>Immer</strong> — "mutating" syntax converted to immutable updates.</li>
+</ul>
+<pre>const todosSlice = createSlice({
+  name: 'todos',
+  initialState: [],
+  reducers: {
+    add: (state, action) => {
+      state.push(action.payload); // Immer handles immutability
+    },
+  },
+});</pre>
+<div class="dotnet-note">Immer's "write mutations that become immutable" is analogous to how EF Core's change tracker detects mutations and generates SQL.</div>`
+  },
+  {
+    id: 29, category: "redux", difficulty: "Intermediate",
+    q: "Explain the Redux data flow. What happens when you dispatch an action?",
+    a: `<p>Strict <strong>unidirectional data flow</strong>:</p>
+<ol>
+<li><strong>Event occurs</strong> → user clicks, API responds.</li>
+<li><strong>Action dispatched</strong> → <code>dispatch({ type: 'cart/addItem', payload: item })</code></li>
+<li><strong>Middleware processes</strong> → thunks, loggers intercept.</li>
+<li><strong>Reducers run</strong> → return new state.</li>
+<li><strong>Store updates</strong> → root state replaced.</li>
+<li><strong>UI re-renders</strong> → <code>useSelector</code> checks for changes.</li>
+</ol>
+<div class="dotnet-note">Identical to ASP.NET middleware pipeline: Request (Action) → Middleware → Controller (Reducer) → Response (New State). Redux DevTools is like Application Insights.</div>`
+  },
+  {
+    id: 30, category: "redux", difficulty: "Intermediate",
+    q: "What are useSelector and useDispatch? How do they replace connect()?",
+    a: `<p>React-Redux hooks that replaced the <code>connect()</code> HOC:</p>
+<ul>
+<li><code>useSelector(selectorFn)</code> — extracts data; re-renders only when selected value changes (<code>===</code>).</li>
+<li><code>useDispatch()</code> — returns <code>dispatch</code> function.</li>
+</ul>
+<pre>function TodoItem({ id }) {
+  const todo = useSelector(state => state.todos.find(t => t.id === id));
+  const dispatch = useDispatch();
+  return (
+    &lt;div onClick={() => dispatch(toggle(id))}&gt;
+      {todo.done ? '✅' : '⬜'} {todo.text}
+    &lt;/div&gt;
+  );
+}</pre>`
+  },
+  {
+    id: 31, category: "redux", difficulty: "Advanced",
+    q: "What is Redux middleware? How do you write custom middleware?",
+    a: `<p>Middleware sits between dispatch and the reducer. Signature: <code>store => next => action</code>.</p>
+<pre>const loggerMiddleware = (store) => (next) => (action) => {
+  console.log('Dispatching:', action.type);
+  const result = next(action);
+  console.log('Next state:', store.getState());
+  return result;
+};
+
+const store = configureStore({
+  reducer: rootReducer,
+  middleware: (getDefault) => getDefault().concat(loggerMiddleware),
+});</pre>
+<div class="dotnet-note">Structurally identical to ASP.NET Core middleware: <code>app.Use(async (context, next) => { ... await next(); ... })</code>.</div>`
+  },
+  {
+    id: 32, category: "redux", difficulty: "Intermediate",
+    q: "What is createAsyncThunk and how does it handle async operations?",
+    a: `<p>Generates a thunk that dispatches <strong>three lifecycle actions</strong>: <code>pending</code>, <code>fulfilled</code>, <code>rejected</code>.</p>
+<pre>const fetchUsers = createAsyncThunk('users/fetchAll',
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await fetch('/api/users');
+      return await res.json();
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+// In slice: extraReducers handles pending/fulfilled/rejected</pre>
+<div class="dotnet-note">Think of the three states as HTTP lifecycle: pending = request sent, fulfilled = 200 OK, rejected = 500 error.</div>`
+  },
+  {
+    id: 33, category: "redux", difficulty: "Advanced",
+    q: "What is state normalization in Redux? Why is it important?",
+    a: `<p>Normalization stores data in a <strong>flat, database-like structure</strong> using IDs as keys:</p>
+<pre>// ✅ Normalized
+{
+  users: { byId: { 1: { id: 1, name: 'Alice' } }, allIds: [1] },
+  posts: { byId: { 1: { id: 1, title: '...', authorId: 1 } }, allIds: [1] },
+}</pre>
+<p><strong>Benefits:</strong> No duplicate data, O(1) lookups, simpler reducer logic. RTK provides <code>createEntityAdapter</code>.</p>
+<div class="dotnet-note">This is literally database normalization (3NF) applied to frontend state. Your SQL tables with foreign keys = normalized Redux state.</div>`
+  },
+  {
+    id: 34, category: "redux", difficulty: "Advanced",
+    q: "What is Redux Saga? How does it compare to Redux Thunk?",
+    a: `<p><strong>Thunk:</strong> Dispatch functions. Simple, uses async/await.</p>
+<p><strong>Saga:</strong> Generator functions for declarative side effects. Advanced patterns: debouncing, throttling, cancellation, racing.</p>
+<pre>// Saga
+function* fetchUserSaga(action) {
+  try {
+    const user = yield call(api.getUser, action.payload);
+    yield put(setUser(user));
+  } catch (e) {
+    yield put(setError(e.message));
+  }
+}
+function* watchFetchUser() {
+  yield takeLatest('user/fetch', fetchUserSaga);
+}</pre>
+<p><strong>Choose Thunk</strong> for simple apps. <strong>Choose Saga</strong> for complex async workflows.</p>
+<div class="dotnet-note">Thunk = calling an async service directly. Saga = <code>IHostedService</code> with <code>Channel&lt;T&gt;</code> — long-running, event-driven, with cancellation.</div>`
+  },
+  {
+    id: 35, category: "redux", difficulty: "Intermediate",
+    q: "What are Redux selectors? What is Reselect and why use memoized selectors?",
+    a: `<p>Selectors extract and derive data from the store. Memoized selectors cache results:</p>
+<pre>const selectFilteredTodos = createSelector(
+  [selectTodos, selectFilter],
+  (todos, filter) => todos.filter(t =>
+    filter === 'completed' ? t.done : !t.done
+  )
+);</pre>
+<p>Without memoization, derived data recalculates on every render.</p>
+<div class="dotnet-note">Like <code>[OutputCache]</code> on a controller action — cached until underlying data changes.</div>`
+  },
+  {
+    id: 36, category: "redux", difficulty: "Basic",
+    q: "What is the difference between Redux store state and React component state?",
+    a: `<ul>
+<li><strong>Redux store</strong> — global, shared. For: auth, cart, cached API data.</li>
+<li><strong>Component state</strong> — local, private. For: form inputs, toggles, animation.</li>
+</ul>
+<p><strong>Rule:</strong> "Would other parts care about this data?" Yes → Redux. No → local state.</p>
+<div class="dotnet-note">Redux = database/shared cache. Component state = local variables in a method.</div>`
+  },
+  {
+    id: 37, category: "redux", difficulty: "Advanced",
+    q: "How does RTK Query work and what problem does it solve?",
+    a: `<p>RTK Query is a <strong>data fetching and caching tool</strong> built into RTK. Eliminates thunks, reducers, and loading state for API calls.</p>
+<pre>const api = createApi({
+  baseQuery: fetchBaseQuery({ baseUrl: '/api' }),
+  tagTypes: ['User'],
+  endpoints: (builder) => ({
+    getUsers: builder.query({
+      query: () => '/users',
+      providesTags: ['User'],
+    }),
+    addUser: builder.mutation({
+      query: (newUser) => ({ url: '/users', method: 'POST', body: newUser }),
+      invalidatesTags: ['User'],
+    }),
+  }),
+});
+
+const { data, isLoading } = useGetUsersQuery();</pre>
+<div class="dotnet-note">Frontend equivalent of typed <code>HttpClient</code> + <code>IDistributedCache</code> + automatic cache invalidation.</div>`
+  },
+  {
+    id: 38, category: "redux", difficulty: "Intermediate",
+    q: "How do you structure a large Redux application? What is the 'feature folder' pattern?",
+    a: `<pre>src/
+├── app/
+│   └── store.js
+├── features/
+│   ├── auth/
+│   │   ├── authSlice.js
+│   │   ├── LoginForm.jsx
+│   │   └── AuthGuard.jsx
+│   ├── todos/
+│   │   ├── todosSlice.js
+│   │   └── TodoList.jsx
+└── common/
+    ├── hooks/
+    └── components/</pre>
+<p>Related code is co-located. Easy to delete or refactor a feature.</p>
+<div class="dotnet-note">Mirrors Vertical Slice Architecture in .NET — handler, model, and validator live together.</div>`
+  },
+  {
+    id: 39, category: "redux", difficulty: "Advanced",
+    q: "How do you persist Redux state across browser sessions?",
+    a: `<p>Use <strong>redux-persist</strong> with <code>localStorage</code> and rehydrate on startup:</p>
+<pre>const persistConfig = {
+  key: 'root',
+  storage,
+  whitelist: ['auth', 'settings'],
+};
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+// In app entry
+&lt;PersistGate loading={&lt;Spinner /&gt;} persistor={persistor}&gt;
+  &lt;App /&gt;
+&lt;/PersistGate&gt;</pre>
+<p>Version your persisted state, don't persist sensitive tokens without encryption.</p>
+<div class="dotnet-note">Equivalent to <code>IDistributedCache</code> or session state in ASP.NET. Migrations = EF Core migrations for your client-side "database."</div>`
+  },
+  {
+    id: 40, category: "redux", difficulty: "Advanced",
+    q: "When should you NOT use Redux? What are modern alternatives?",
+    a: `<p>Redux adds complexity. <strong>Don't use it when:</strong> the app is small, state is mostly local, you're prototyping, or the team is new to Redux.</p>
+<p><strong>Modern alternatives:</strong></p>
+<ul>
+<li><strong>Zustand</strong> — minimal API, no boilerplate.</li>
+<li><strong>Jotai</strong> — atomic state (bottom-up).</li>
+<li><strong>TanStack Query</strong> — if your "state" is server data.</li>
+<li><strong>Context + useReducer</strong> — built-in, zero deps.</li>
+</ul>
+<p><strong>The trend:</strong> "Server state" moves to TanStack Query / SWR, leaving very little client state that needs Redux.</p>
+<div class="dotnet-note">You don't always need full CQRS + Event Sourcing. Sometimes a simple repository pattern (Zustand) or in-memory caching (Context) is enough.</div>`
+  },
+
+  // ===== ADVANCED (8) — NEW =====
+  {
+    id: 201, category: "advanced", difficulty: "Advanced",
+    q: "What is React Fiber and how does it change the rendering model?",
+    a: `<p><strong>React Fiber</strong> is the complete rewrite of React's reconciliation engine (introduced in React 16). It replaces the old stack-based, synchronous reconciler with a <strong>linked-list-based, incremental</strong> one.</p>
+<p><strong>Key capabilities:</strong></p>
+<ul>
+<li><strong>Incremental rendering</strong> — work is split into small units ("fibers") that can be paused, resumed, or aborted.</li>
+<li><strong>Priority-based scheduling</strong> — urgent updates (typing) interrupt less important ones (off-screen rendering).</li>
+<li><strong>Two phases</strong>: the <strong>render/reconciliation phase</strong> (interruptible, builds the work-in-progress tree) and the <strong>commit phase</strong> (synchronous, applies DOM changes in one batch).</li>
+</ul>
+<p>Fiber is what enables Concurrent Features like <code>useTransition</code>, <code>useDeferredValue</code>, <code>Suspense</code> for data, and streaming SSR.</p>
+<div class="dotnet-note">Fiber is like switching from synchronous request handling to the TPL (Task Parallel Library) with <code>async/await</code> in ASP.NET. Work can be paused (awaited) and resumed, and high-priority requests get processed first — similar to how ASP.NET Kestrel handles concurrent requests with thread pool scheduling.</div>`
+  },
+  {
+    id: 202, category: "advanced", difficulty: "Advanced",
+    q: "What are React Server Components (RSC)? How do they differ from SSR?",
+    a: `<p><strong>React Server Components</strong> render <strong>entirely on the server</strong> and send serialized output (not HTML) to the client. They have <strong>zero impact on client bundle size</strong>.</p>
+<p><strong>Key differences from traditional SSR:</strong></p>
+<ul>
+<li><strong>SSR</strong> renders the full component tree to HTML on the server, then the client downloads all the JS and <strong>hydrates</strong> to make it interactive. All component code ships to the client.</li>
+<li><strong>RSC</strong> components <strong>never reach the client</strong>. They can access databases, file systems, and secrets directly. Only Client Components (marked with <code>"use client"</code>) ship JS to the browser.</li>
+</ul>
+<pre>// Server Component (default in RSC frameworks)
+async function UserList() {
+  const users = await db.query('SELECT * FROM users'); // direct DB access!
+  return &lt;ul&gt;{users.map(u => &lt;li key={u.id}&gt;{u.name}&lt;/li&gt;)}&lt;/ul&gt;;
+}
+
+// Client Component (opt-in)
+"use client";
+function LikeButton() {
+  const [liked, setLiked] = useState(false);
+  return &lt;button onClick={() => setLiked(!liked)}&gt;❤️&lt;/button&gt;;
+}</pre>
+<div class="dotnet-note">RSC is like Razor Pages or MVC views that run server-side — you query the database directly in the view. The key difference: RSC components compose with interactive client components seamlessly, unlike the hard boundary between Razor views and Blazor WebAssembly.</div>`
+  },
+  {
+    id: 203, category: "advanced", difficulty: "Advanced",
+    q: "What is the React Compiler and how does it change development patterns?",
+    a: `<p>The <strong>React Compiler</strong> (previously "React Forget") is a build-time optimization tool that <strong>automatically memoizes</strong> components and hooks. It analyzes your code and inserts <code>useMemo</code>, <code>useCallback</code>, and <code>React.memo</code> equivalents where needed.</p>
+<p><strong>What this means for developers:</strong></p>
+<ul>
+<li>You <strong>no longer need to manually write</strong> <code>useMemo</code>, <code>useCallback</code>, or wrap components in <code>React.memo</code> in most cases.</li>
+<li>The compiler understands React's rules and optimizes more aggressively than humans typically do.</li>
+<li>Code becomes <strong>simpler and more readable</strong> — write straightforward code and let the compiler handle performance.</li>
+</ul>
+<pre>// Before compiler: manual memoization
+const sorted = useMemo(() => items.sort(compareFn), [items]);
+const handleClick = useCallback(() => doSomething(id), [id]);
+
+// After compiler: just write plain code
+const sorted = items.sort(compareFn);        // compiler memoizes
+const handleClick = () => doSomething(id);    // compiler memoizes</pre>
+<div class="dotnet-note">Similar to how the C# JIT compiler optimizes your code at runtime — you write clean, readable code and the toolchain handles performance. Like how the Roslyn compiler's analyzers suggest improvements, the React Compiler goes a step further and applies them automatically.</div>`
+  },
+  {
+    id: 204, category: "advanced", difficulty: "Advanced",
+    q: "What is the 'use' hook in React 19? How does it differ from useContext and useEffect?",
+    a: `<p>The <code>use</code> hook (React 19) is a new primitive that can <strong>read Promises and Context during render</strong>. Unlike other hooks, it can be called <strong>inside conditionals and loops</strong>.</p>
+<pre>// Reading a Promise (replaces useEffect for data loading)
+function UserProfile({ userPromise }) {
+  const user = use(userPromise); // suspends until resolved
+  return &lt;h1&gt;{user.name}&lt;/h1&gt;;
+}
+
+// Reading Context (simpler than useContext)
+function ThemedButton() {
+  const theme = use(ThemeContext);
+  return &lt;button className={theme}&gt;Click&lt;/button&gt;;
+}
+
+// ✅ Can be used conditionally (unlike useContext!)
+if (shouldLoadUser) {
+  const user = use(userPromise);
+}</pre>
+<p><strong>Key differences:</strong></p>
+<ul>
+<li>Unlike <code>useEffect</code>, <code>use</code> <strong>suspends</strong> the component until the Promise resolves (works with Suspense boundaries).</li>
+<li>Unlike <code>useContext</code>, <code>use</code> can be called conditionally.</li>
+<li>It doesn't trigger side effects — it reads values.</li>
+</ul>
+<div class="dotnet-note">Similar to <code>await</code> in an <code>async</code> Razor component in Blazor — the rendering pauses until the data is available, and a loading state (Suspense fallback) is shown automatically.</div>`
+  },
+  {
+    id: 205, category: "advanced", difficulty: "Advanced",
+    q: "What are useActionState and useOptimistic in React 19?",
+    a: `<p>React 19 introduces new hooks for handling form submissions and optimistic UI:</p>
+<p><strong><code>useActionState</code></strong> (renamed from <code>useFormState</code>) manages the lifecycle of an async action — pending state, result, and errors:</p>
+<pre>function AddTodo() {
+  const [state, submitAction, isPending] = useActionState(
+    async (previousState, formData) => {
+      const todo = await saveTodo(formData.get('title'));
+      return { todos: [...previousState.todos, todo] };
+    },
+    { todos: [] }
+  );
+
+  return (
+    &lt;form action={submitAction}&gt;
+      &lt;input name="title" /&gt;
+      &lt;button disabled={isPending}&gt;
+        {isPending ? 'Saving...' : 'Add'}
+      &lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</pre>
+<p><strong><code>useOptimistic</code></strong> shows a temporary "success" state while the server request is in flight:</p>
+<pre>const [optimisticTodos, addOptimistic] = useOptimistic(
+  todos,
+  (current, newTodo) => [...current, { ...newTodo, pending: true }]
+);
+
+// In the action: addOptimistic(newTodo) shows it immediately
+// If the request fails, React rolls back automatically</pre>
+<div class="dotnet-note"><code>useActionState</code> is like an ASP.NET form POST handler with built-in loading/error state management. <code>useOptimistic</code> is like updating a local cache before the database write confirms — similar to optimistic concurrency in EF Core, but for UI.</div>`
+  },
+  {
+    id: 206, category: "advanced", difficulty: "Advanced",
+    q: "What is hydration in React? What causes hydration mismatches?",
+    a: `<p><strong>Hydration</strong> is the process where React takes server-rendered HTML and <strong>attaches event listeners and React's internal state tree</strong> to make it interactive — without re-rendering the DOM from scratch.</p>
+<p><strong>Common causes of hydration mismatches:</strong></p>
+<ul>
+<li><strong>Date/time</strong> — <code>new Date()</code> differs between server and client.</li>
+<li><strong>Random values</strong> — <code>Math.random()</code> or <code>crypto.randomUUID()</code>.</li>
+<li><strong>Browser-only APIs</strong> — <code>window.innerWidth</code>, <code>localStorage</code> on the server.</li>
+<li><strong>Invalid HTML nesting</strong> — <code>&lt;p&gt;&lt;div&gt;...&lt;/div&gt;&lt;/p&gt;</code> (browsers auto-correct).</li>
+<li><strong>Third-party extensions</strong> — browser extensions that modify the DOM.</li>
+</ul>
+<pre>// ❌ Mismatch: different on server vs client
+function Timer() {
+  return &lt;span&gt;{Date.now()}&lt;/span&gt;; // different!
+}
+
+// ✅ Fix: use useEffect for client-only values
+function Timer() {
+  const [time, setTime] = useState(null);
+  useEffect(() => setTime(Date.now()), []);
+  return &lt;span&gt;{time ?? 'Loading...'}&lt;/span&gt;;
+}</pre>
+<div class="dotnet-note">Hydration is like Blazor Server's circuit reconnection — the server-rendered markup must match what the client would produce, or the framework gets confused about which DOM elements correspond to which components.</div>`
+  },
+  {
+    id: 207, category: "advanced", difficulty: "Advanced",
+    q: "How does Suspense work for data fetching? What changed in React 18/19?",
+    a: `<p><code>Suspense</code> lets you declaratively specify loading states. A component "suspends" by throwing a Promise, and the nearest <code>&lt;Suspense&gt;</code> boundary shows a fallback until it resolves.</p>
+<pre>&lt;Suspense fallback={&lt;Skeleton /&gt;}&gt;
+  &lt;UserProfile /&gt;  {/* suspends while data loads */}
+  &lt;UserPosts /&gt;    {/* suspends independently */}
+&lt;/Suspense&gt;</pre>
+<p><strong>Evolution:</strong></p>
+<ul>
+<li><strong>React 16</strong> — Suspense for <code>React.lazy</code> (code splitting) only.</li>
+<li><strong>React 18</strong> — Suspense for streaming SSR, concurrent features.</li>
+<li><strong>React 19</strong> — Suspense integrated with the <code>use</code> hook, Actions, and Server Components. You can directly pass Promises to components and <code>use()</code> them.</li>
+</ul>
+<p>Libraries like TanStack Query and Relay integrate with Suspense for data fetching. <strong>You don't throw promises yourself</strong> — the libraries handle the Suspense protocol.</p>
+<div class="dotnet-note">Suspense is similar to Blazor's <code>&lt;Virtualize&gt;</code> with loading placeholders, or ASP.NET Core's streaming rendering where partial HTML is sent and later replaced with complete content as data becomes available.</div>`
+  },
+  {
+    id: 208, category: "advanced", difficulty: "Intermediate",
+    q: "What are Higher-Order Components (HOC) and Render Props? Are they still relevant?",
+    a: `<p><strong>HOC:</strong> A function that takes a component and returns a new enhanced component. Used for cross-cutting concerns (auth, logging, theming).</p>
+<pre>// HOC pattern
+function withAuth(Component) {
+  return function AuthenticatedComponent(props) {
+    const user = useAuth();
+    if (!user) return &lt;LoginRedirect /&gt;;
+    return &lt;Component {...props} user={user} /&gt;;
+  };
+}
+const ProtectedDashboard = withAuth(Dashboard);</pre>
+<p><strong>Render Props:</strong> A component that takes a function as a prop (or children) and calls it with data.</p>
+<pre>// Render prop pattern
+&lt;MouseTracker&gt;
+  {({ x, y }) => &lt;Cursor position={{ x, y }} /&gt;}
+&lt;/MouseTracker&gt;</pre>
+<p><strong>Are they still relevant?</strong> Custom Hooks have largely replaced both patterns for sharing stateful logic. HOCs are still seen in libraries (React Router's <code>withRouter</code>, Redux's <code>connect</code>), and Render Props survive in a few libraries, but <strong>new code should prefer custom Hooks</strong>.</p>
+<div class="dotnet-note">HOCs are like decorator pattern or C# attributes that wrap behavior. Render Props are like callback delegates. Custom Hooks replaced both, just as C# extension methods and LINQ replaced many traditional patterns.</div>`
+  },
+
+  // ===== ADVANCED (continued) — ROUND 3 =====
+  {
+    id: 209, category: "advanced", difficulty: "Advanced",
+    q: "What is Concurrent Rendering in React 18/19? How does it differ from synchronous rendering?",
+    a: `<p>In <strong>synchronous rendering</strong> (React 17 and earlier), once React starts rendering a component tree, it cannot be interrupted — the main thread is blocked until every component has rendered and the DOM is updated.</p>
+<p><strong>Concurrent rendering</strong> (React 18+) allows React to <strong>pause, interrupt, and resume</strong> rendering work:</p>
+<ul>
+<li>React can start rendering an update, pause to handle a more urgent update (like a keystroke), then resume the original work.</li>
+<li>It renders in memory <strong>without committing to the DOM</strong> until the full tree is ready.</li>
+<li>Multiple versions of the UI can be "in progress" simultaneously.</li>
+</ul>
+<pre>// Concurrent features that use this:
+// 1. useTransition — mark updates as non-urgent
+const [isPending, startTransition] = useTransition();
+startTransition(() =&gt; setSearchResults(filtered));
+
+// 2. useDeferredValue — defer a value
+const deferredQuery = useDeferredValue(query);
+
+// 3. Suspense — pause rendering while data loads
+&lt;Suspense fallback={&lt;Spinner /&gt;}&gt;
+  &lt;LazyComponent /&gt;
+&lt;/Suspense&gt;</pre>
+<p><strong>Key insight:</strong> Concurrent mode is <strong>opt-in per update</strong>, not a global switch. Regular <code>setState</code> calls are still synchronous (urgent). Only updates wrapped in <code>startTransition</code> or <code>useDeferredValue</code> use concurrent scheduling.</p>
+<div class="dotnet-note">Think of synchronous rendering as a single-threaded request pipeline (classic ASP.NET). Concurrent rendering is like ASP.NET Core's async pipeline — requests can yield the thread, allowing higher-priority work to execute. The <code>startTransition</code> API is like <code>Task.Run</code> with lower <code>ThreadPool</code> priority.</div>`
+  },
+  {
+    id: 210, category: "advanced", difficulty: "Advanced",
+    q: "What is 'tearing' in concurrent React? What is useSyncExternalStore?",
+    a: `<p><strong>Tearing</strong> occurs when different parts of the UI show <strong>inconsistent state</strong> because an external store updated mid-render during concurrent rendering. React might render component A with version 1 of the data, get interrupted, then render component B with version 2.</p>
+<p><code>useSyncExternalStore</code> (React 18) solves this by ensuring consistent reads from external stores during concurrent renders:</p>
+<pre>import { useSyncExternalStore } from 'react';
+
+function useExternalStore() {
+  return useSyncExternalStore(
+    store.subscribe,       // how to subscribe
+    store.getSnapshot,     // how to get current value (client)
+    store.getServerSnapshot // how to get value during SSR
+  );
+}
+
+// Example with a simple external store
+const store = {
+  _value: 0,
+  _listeners: new Set(),
+  subscribe(callback) {
+    store._listeners.add(callback);
+    return () =&gt; store._listeners.delete(callback);
+  },
+  getSnapshot() { return store._value; },
+};</pre>
+<p><strong>When you need it:</strong> When consuming external state stores (non-React state, browser APIs like <code>matchMedia</code>, third-party state libraries). Redux and Zustand use this internally.</p>
+<div class="dotnet-note">Tearing is like a dirty read in SQL (READ UNCOMMITTED isolation). <code>useSyncExternalStore</code> enforces snapshot isolation — all components see the same consistent version of external state during a render pass, like <code>SNAPSHOT</code> isolation in SQL Server.</div>`
+  },
+  {
+    id: 211, category: "advanced", difficulty: "Advanced",
+    q: "What is Streaming SSR and Selective Hydration? How do they improve performance?",
+    a: `<p><strong>Streaming SSR</strong> (React 18+) sends HTML to the browser <strong>progressively</strong> instead of waiting for the entire page to render server-side. Combined with <code>&lt;Suspense&gt;</code>, slow sections show fallbacks while fast sections are sent immediately.</p>
+<pre>// Server renders this progressively:
+&lt;Layout&gt;
+  &lt;Header /&gt;          {/* sent immediately */}
+  &lt;Suspense fallback={&lt;Skeleton /&gt;}&gt;
+    &lt;SlowDataSection /&gt;  {/* streamed later when data is ready */}
+  &lt;/Suspense&gt;
+  &lt;Footer /&gt;           {/* sent immediately */}
+&lt;/Layout&gt;</pre>
+<p><strong>Selective Hydration</strong> allows React to hydrate interactive sections <strong>independently and in priority order</strong>:</p>
+<ul>
+<li>If the user clicks on a section that hasn't hydrated yet, React <strong>prioritizes hydrating that section</strong> over others.</li>
+<li>Non-visible or non-interacted sections hydrate later or on idle.</li>
+</ul>
+<p><strong>Combined effect:</strong> Users see content faster (streaming) and can interact sooner (selective hydration). Time to First Byte (TTFB) and First Contentful Paint (FCP) improve dramatically.</p>
+<div class="dotnet-note">Streaming SSR is like ASP.NET Core's response streaming with <code>IAsyncEnumerable</code> — you start sending data before the entire result set is ready. Selective hydration is like lazy-loading Blazor WebAssembly components — only the sections the user interacts with are loaded first.</div>`
+  },
+  {
+    id: 212, category: "advanced", difficulty: "Advanced",
+    q: "How do you profile and debug React performance? What tools are available?",
+    a: `<p><strong>React DevTools Profiler:</strong> The primary tool. Records renders and shows:</p>
+<ul>
+<li>Which components rendered and <strong>why</strong> (state change, parent re-render, context change).</li>
+<li><strong>Render duration</strong> for each component.</li>
+<li>Flamegraph and ranked views of the component tree.</li>
+</ul>
+<p><strong>Other tools and techniques:</strong></p>
+<pre>// 1. React.Profiler component — programmatic profiling
+&lt;Profiler id="Navigation" onRender={onRenderCallback}&gt;
+  &lt;Navigation /&gt;
+&lt;/Profiler&gt;
+
+function onRenderCallback(id, phase, actualDuration) {
+  console.log(\`\${id} rendered in \${actualDuration}ms during \${phase}\`);
+}
+
+// 2. why-did-you-render — logs unnecessary re-renders
+// 3. Chrome DevTools Performance tab — full JS profiling
+// 4. React Scan — highlights re-rendering components visually</pre>
+<p><strong>Performance debugging workflow:</strong></p>
+<ol>
+<li><strong>Identify</strong> slow components with Profiler.</li>
+<li><strong>Understand why</strong> they re-render (check "Why did this render?").</li>
+<li><strong>Apply fixes:</strong> <code>React.memo</code>, <code>useMemo</code>, <code>useCallback</code>, state splitting, or virtualization.</li>
+<li><strong>Measure again</strong> to confirm improvement.</li>
+</ol>
+<div class="dotnet-note">React DevTools Profiler ≈ Application Insights + MiniProfiler in .NET. The workflow is the same as .NET performance tuning: profile first, identify hot paths, optimize selectively, measure again. Don't optimize prematurely.</div>`
+  },
+  {
+    id: 213, category: "advanced", difficulty: "Advanced",
+    q: "What are Server Actions in React 19? How do they work with forms?",
+    a: `<p><strong>Server Actions</strong> are async functions that run on the server, invoked directly from client components. They eliminate the need for manual API routes for form submissions and mutations.</p>
+<pre>// In a Server Component file
+"use server";
+
+async function addTodo(formData) {
+  const title = formData.get('title');
+  await db.insert('todos', { title });
+  revalidatePath('/todos'); // refresh the page data
+}
+
+// In a Client Component
+"use client";
+
+function TodoForm() {
+  return (
+    &lt;form action={addTodo}&gt;
+      &lt;input name="title" /&gt;
+      &lt;button type="submit"&gt;Add Todo&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</pre>
+<p><strong>Key benefits:</strong></p>
+<ul>
+<li>No need to create REST/GraphQL endpoints for mutations.</li>
+<li>Automatic serialization of <code>FormData</code>.</li>
+<li>Works with progressive enhancement — forms work even before JavaScript loads.</li>
+<li>Integrates with <code>useActionState</code> and <code>useOptimistic</code> for pending/error states.</li>
+</ul>
+<div class="dotnet-note">Server Actions are remarkably similar to Blazor Server's event handlers that run on the server — you call a C# method directly from the UI. They're also like ASP.NET Razor Pages' <code>OnPost</code> handlers, but with React's declarative component model instead of page-based routing.</div>`
+  },
+  {
+    id: 214, category: "advanced", difficulty: "Advanced",
+    q: "What is the React component composition pattern? Why is it preferred over inheritance?",
+    a: `<p>React strongly favors <strong>composition over inheritance</strong>. Instead of extending base classes, you build complex UIs by <strong>nesting components and passing children</strong>.</p>
+<pre>// ❌ Inheritance (anti-pattern in React)
+class SpecialButton extends Button { ... }
+
+// ✅ Composition — specialized via props
+function Dialog({ title, children, footer }) {
+  return (
+    &lt;div className="dialog"&gt;
+      &lt;h2&gt;{title}&lt;/h2&gt;
+      &lt;div className="body"&gt;{children}&lt;/div&gt;
+      &lt;div className="footer"&gt;{footer}&lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+
+// ✅ Specialization via wrapping
+function ConfirmDialog({ onConfirm, onCancel, children }) {
+  return (
+    &lt;Dialog
+      title="Confirm"
+      footer={
+        &lt;&gt;
+          &lt;button onClick={onCancel}&gt;Cancel&lt;/button&gt;
+          &lt;button onClick={onConfirm}&gt;OK&lt;/button&gt;
+        &lt;/&gt;
+      }
+    &gt;
+      {children}
+    &lt;/Dialog&gt;
+  );
+}</pre>
+<p><strong>Composition patterns:</strong></p>
+<ul>
+<li><strong>Children prop</strong> — generic containment.</li>
+<li><strong>Named slots</strong> via props (<code>header</code>, <code>footer</code>, <code>sidebar</code>).</li>
+<li><strong>Render props</strong> — passing functions as children.</li>
+<li><strong>Custom Hooks</strong> — composing behavior without UI.</li>
+</ul>
+<div class="dotnet-note">This is a significant mindset shift from .NET's OOP inheritance. In C#, you'd naturally create <code>class SpecialButton : Button</code>. In React, you compose: wrap, inject props, pass children. It's more like C#'s interface composition + delegation pattern than class inheritance.</div>`
+  },
+  {
+    id: 215, category: "advanced", difficulty: "Advanced",
+    q: "What is React Router and how does client-side routing work?",
+    a: `<p><strong>React Router</strong> is the standard routing library. It intercepts navigation and renders the matching component <strong>without a full page reload</strong>.</p>
+<pre>import { BrowserRouter, Routes, Route, Link, useParams }
+  from 'react-router-dom';
+
+function App() {
+  return (
+    &lt;BrowserRouter&gt;
+      &lt;nav&gt;
+        &lt;Link to="/"&gt;Home&lt;/Link&gt;
+        &lt;Link to="/users"&gt;Users&lt;/Link&gt;
+      &lt;/nav&gt;
+      &lt;Routes&gt;
+        &lt;Route path="/" element={&lt;Home /&gt;} /&gt;
+        &lt;Route path="/users" element={&lt;UserList /&gt;} /&gt;
+        &lt;Route path="/users/:id" element={&lt;UserDetail /&gt;} /&gt;
+        &lt;Route path="*" element={&lt;NotFound /&gt;} /&gt;
+      &lt;/Routes&gt;
+    &lt;/BrowserRouter&gt;
+  );
+}
+
+function UserDetail() {
+  const { id } = useParams(); // read :id from URL
+  return &lt;h1&gt;User {id}&lt;/h1&gt;;
+}</pre>
+<p><strong>Key concepts:</strong> nested routes, <code>useNavigate</code> for programmatic navigation, <code>useSearchParams</code> for query strings, <code>&lt;Outlet /&gt;</code> for nested layouts, route-based code splitting with <code>React.lazy</code>.</p>
+<div class="dotnet-note">React Router is like ASP.NET Core's endpoint routing (<code>app.MapGet("/users/{id}", ...)</code>), but client-side. <code>&lt;Link&gt;</code> is like <code>asp-page</code> tag helpers. <code>useParams</code> is like <code>[FromRoute] int id</code>. The <code>&lt;Outlet&gt;</code> is like <code>@RenderBody()</code> in Razor layouts.</div>`
+  },
+  {
+    id: 216, category: "advanced", difficulty: "Advanced",
+    q: "What are the differences between Zustand, Jotai, and Redux Toolkit for state management in 2026?",
+    a: `<p>Each targets a different complexity level and mental model:</p>
+<p><strong>Redux Toolkit (RTK):</strong></p>
+<ul>
+<li>Centralized store, actions/reducers/middleware pattern.</li>
+<li>Best for: large teams, complex business logic, time-travel debugging.</li>
+<li>Boilerplate: medium (much less than legacy Redux).</li>
+</ul>
+<p><strong>Zustand:</strong></p>
+<ul>
+<li>Minimal API — create a store with plain functions. No providers, no boilerplate.</li>
+<li>Best for: medium apps, teams that want simplicity. Most popular Redux alternative.</li>
+</ul>
+<pre>// Zustand — entire store in ~10 lines
+const useStore = create((set) =&gt; ({
+  count: 0,
+  increment: () =&gt; set(state =&gt; ({ count: state.count + 1 })),
+}));
+
+// Usage — no Provider needed!
+const count = useStore(state =&gt; state.count);</pre>
+<p><strong>Jotai:</strong></p>
+<ul>
+<li>Atomic state — each piece of state is an independent atom. Bottom-up.</li>
+<li>Best for: fine-grained reactivity, derived/computed state.</li>
+</ul>
+<pre>// Jotai — atomic approach
+const countAtom = atom(0);
+const doubleAtom = atom((get) =&gt; get(countAtom) * 2);
+
+const [count, setCount] = useAtom(countAtom);</pre>
+<p><strong>Decision framework:</strong> Use RTK when you need middleware, devtools, and structured patterns. Use Zustand for simplicity. Use Jotai when you have many independent, composable pieces of state.</p>
+<div class="dotnet-note">RTK ≈ full MediatR + CQRS setup. Zustand ≈ a simple static service class with properties. Jotai ≈ reactive properties with computed dependencies, like Excel cells that reference each other.</div>`
+  },
+
+  // ===== TRICKY (7) — NEW =====
+  {
+    id: 301, category: "tricky", difficulty: "Tricky",
+    q: "What does this render? <code>{ count && &lt;Badge /&gt; }</code> when count is 0?",
+    a: `<p>It renders <strong><code>0</code></strong> on the screen — not nothing, and not <code>&lt;Badge /&gt;</code>.</p>
+<p><strong>Why:</strong> JavaScript's <code>&&</code> operator returns the first falsy value (not <code>false</code>, but the actual value). Since <code>0</code> is falsy, the expression evaluates to <code>0</code>. React renders numbers, so <code>0</code> appears on screen.</p>
+<pre>// ❌ Bug: renders "0" when count is 0
+{count && &lt;Badge count={count} /&gt;}
+
+// ✅ Fix 1: explicit boolean comparison
+{count > 0 && &lt;Badge count={count} /&gt;}
+
+// ✅ Fix 2: ternary
+{count ? &lt;Badge count={count} /&gt; : null}
+
+// ✅ Fix 3: double negation
+{!!count && &lt;Badge count={count} /&gt;}</pre>
+<div class="tricky-note">This catches many developers off guard. The same bug occurs with empty strings: <code>{name && &lt;Greeting /&gt;}</code> renders an empty string when <code>name</code> is <code>""</code>. Always use explicit boolean expressions for conditional rendering.</div>`
+  },
+  {
+    id: 302, category: "tricky", difficulty: "Tricky",
+    q: "Why does this setState not update immediately? What's the output?",
+    a: `<p>Consider this code:</p>
+<pre>function Counter() {
+  const [count, setCount] = useState(0);
+
+  const handleClick = () => {
+    setCount(count + 1);
+    setCount(count + 1);
+    setCount(count + 1);
+    console.log(count); // What prints?
+  };
+}</pre>
+<p><strong>Output:</strong> <code>console.log(count)</code> prints <strong><code>0</code></strong>, and after render, <code>count</code> is <strong><code>1</code></strong> (not 3).</p>
+<p><strong>Why:</strong></p>
+<ul>
+<li>State updates are <strong>batched and asynchronous</strong>. The <code>count</code> variable in the closure is still <code>0</code> when <code>console.log</code> runs.</li>
+<li>All three <code>setCount(count + 1)</code> calls compute <code>setCount(0 + 1)</code> using the same stale <code>count</code> value.</li>
+</ul>
+<pre>// ✅ Fix: use functional updater
+setCount(prev => prev + 1);
+setCount(prev => prev + 1);
+setCount(prev => prev + 1);
+// Now count will be 3 after render</pre>
+<div class="tricky-note">This is a classic interview trap. React batches state updates for performance. The functional updater pattern (<code>prev => prev + 1</code>) always uses the latest pending state, not the stale closure value.</div>`
+  },
+  {
+    id: 303, category: "tricky", difficulty: "Tricky",
+    q: "What happens if you call useState's setter with the same value?",
+    a: `<p>If you call <code>setState</code> with a value that is the <strong>same reference</strong> (<code>Object.is</code> comparison), React <strong>bails out</strong> — it skips re-rendering the component and its children.</p>
+<pre>const [user, setUser] = useState({ name: 'Alice' });
+
+// ❌ This DOES cause a re-render — new object reference
+setUser({ name: 'Alice' }); // different object in memory
+
+// ✅ This does NOT cause a re-render — same reference
+setUser(user); // same object
+
+// ❌ MUTATION BUG: no re-render, state looks unchanged
+user.name = 'Bob';
+setUser(user); // same reference! React skips update</pre>
+<p><strong>The mutation trap:</strong> If you mutate the existing object and pass the same reference, React thinks nothing changed. Always create a <strong>new object</strong> for state updates.</p>
+<pre>// ✅ Correct: create new object
+setUser({ ...user, name: 'Bob' });</pre>
+<div class="tricky-note">This is especially tricky for developers coming from mutable-by-default languages. React requires immutable updates — same reference = same state = no re-render. With RTK's Immer, you can write mutation syntax and it handles immutability for you.</div>`
+  },
+  {
+    id: 304, category: "tricky", difficulty: "Tricky",
+    q: "Why do React keys need to be stable? What happens when you use Math.random() as a key?",
+    a: `<p>Using <code>Math.random()</code> as a key means <strong>every render generates new keys</strong>, so React thinks all items are new — it <strong>destroys and recreates every element</strong> on every render.</p>
+<pre>// ❌ TERRIBLE: every render destroys and recreates all items
+{items.map(item => (
+  &lt;input key={Math.random()} defaultValue={item.name} /&gt;
+))}
+// Result: input loses focus, typed text vanishes, animations break</pre>
+<p><strong>Consequences:</strong></p>
+<ul>
+<li>All local state inside child components is <strong>lost</strong> on every parent re-render.</li>
+<li>Inputs lose focus, animations restart, performance degrades massively.</li>
+<li><code>useEffect</code> cleanup + setup runs for every child on every parent render.</li>
+</ul>
+<pre>// ✅ CORRECT: stable, unique identifier
+{items.map(item => (
+  &lt;input key={item.id} defaultValue={item.name} /&gt;
+))}</pre>
+<div class="tricky-note">Interviewers love this question because it tests whether you understand React's reconciliation at a deep level. Keys must be stable (same between renders), unique (among siblings), and predictable.</div>`
+  },
+  {
+    id: 305, category: "tricky", difficulty: "Tricky",
+    q: "What is the children prop? Can you modify children? What are the pitfalls?",
+    a: `<p><code>children</code> is a special prop that contains the JSX nested between a component's opening and closing tags. It can be anything: strings, elements, arrays, functions, or even nothing.</p>
+<pre>// children can be anything
+&lt;Card&gt;Just a string&lt;/Card&gt;
+&lt;Card&gt;&lt;Avatar /&gt; &lt;Name /&gt;&lt;/Card&gt;
+&lt;Card&gt;{user => &lt;p&gt;{user.name}&lt;/p&gt;}&lt;/Card&gt;</pre>
+<p><strong>Manipulating children:</strong> React provides <code>React.Children</code> utilities:</p>
+<pre>// Iterating and cloning with extra props
+React.Children.map(children, child =>
+  React.cloneElement(child, { className: 'injected' })
+);</pre>
+<p><strong>Pitfalls:</strong></p>
+<ul>
+<li><code>typeof children</code> is unreliable — it could be a string, element, array, or undefined.</li>
+<li><code>children.length</code> doesn't work as expected (a single child is not wrapped in an array). Use <code>React.Children.count(children)</code>.</li>
+<li><code>React.cloneElement</code> can cause issues if children don't accept the injected props.</li>
+</ul>
+<div class="tricky-note">Many developers assume <code>children</code> is always an array. It's not — a single child is the element itself. This causes bugs like <code>children.map is not a function</code>. Always use <code>React.Children.map</code> for safe iteration.</div>`
+  },
+  {
+    id: 306, category: "tricky", difficulty: "Tricky",
+    q: "Why does useEffect run twice in development mode (React 18 Strict Mode)?",
+    a: `<p>In React 18's <strong>Strict Mode</strong>, during development, React <strong>intentionally mounts, unmounts, then re-mounts</strong> every component. This means <code>useEffect</code> runs its <strong>setup → cleanup → setup</strong> cycle twice.</p>
+<p><strong>Why React does this:</strong></p>
+<ul>
+<li>To <strong>surface bugs</strong> in your cleanup logic — if your effect doesn't clean up properly, the double-mount exposes it immediately.</li>
+<li>To prepare for <strong>Offscreen API</strong> (future feature) where components can be hidden/shown without unmounting, preserving state.</li>
+<li>To encourage writing <strong>idempotent effects</strong> that can be safely re-run.</li>
+</ul>
+<pre>// This will fire twice in dev (once in prod):
+useEffect(() => {
+  const connection = createConnection();
+  connection.connect();
+  return () => connection.disconnect(); // cleanup must work!
+}, []);
+
+// If cleanup is missing or buggy, the double-mount reveals it:
+// - Two connections open if cleanup doesn't disconnect
+// - Duplicate API calls if no AbortController</pre>
+<p><strong>Important:</strong> This only happens in development + Strict Mode. Production builds run effects once. If your code breaks from double-mounting, you have a cleanup bug — fix the effect, don't remove Strict Mode.</p>
+<div class="tricky-note">This is the #1 source of "why is my API called twice?" confusion in React 18+. The answer is always: your effect's cleanup isn't idempotent. Add proper cleanup and the double-mount becomes harmless.</div>`
+  },
+  {
+    id: 307, category: "tricky", difficulty: "Tricky",
+    q: "What is the difference between <code>key</code> as a prop and <code>key</code> for resetting component state?",
+    a: `<p>The <code>key</code> prop has a powerful secondary use: <strong>forcing React to destroy and recreate a component</strong> (resetting all its internal state) when the key changes.</p>
+<pre>// Normal use: list reconciliation
+{items.map(item => &lt;Item key={item.id} item={item} /&gt;)}
+
+// Trick: reset component state by changing key
+function App() {
+  const [userId, setUserId] = useState(1);
+  return (
+    // When userId changes, ProfileForm is DESTROYED and RECREATED
+    // All its useState, useRef, etc. are reset to initial values
+    &lt;ProfileForm key={userId} userId={userId} /&gt;
+  );
+}</pre>
+<p><strong>Without the key trick:</strong> When <code>userId</code> changes, React re-renders the same <code>ProfileForm</code> instance — old state from the previous user might remain (stale form values, old validation errors).</p>
+<p><strong>With the key trick:</strong> Changing the key tells React "this is a completely different component" — it unmounts the old one and mounts a fresh one with initial state.</p>
+<p><strong>Use this when:</strong> You want a clean slate (reset a form when switching entities, restart an animation, clear internal state of a third-party component).</p>
+<div class="tricky-note">This is an advanced interview pattern. It's the cleanest way to reset a component's state without adding a "reset" prop or useEffect that manually resets every piece of state. But it destroys the DOM subtree, so don't use it where preserving DOM state (focus, scroll position) matters.</div>`
+  },
+];
+
+// Render
+const list = document.getElementById('qa-list');
+
+function renderCards(filter = 'all') {
+  const filtered = filter === 'all' ? questions : questions.filter(q => q.category === filter);
+  list.innerHTML = '';
+  filtered.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'qa-card';
+    card.dataset.category = q.category;
+    card.innerHTML = `
+      <div class="qa-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="q-num">${String(i + 1).padStart(2, '0')}</div>
+        <div class="q-content">
+          <div class="q-text">${q.q}</div>
+          <div class="q-meta">
+            <span class="cat-dot"></span>
+            <span class="cat-label">${catLabels[q.category] || q.category}</span>
+            <span class="diff-badge">${q.difficulty}</span>
+          </div>
+        </div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="qa-answer">
+        <div class="qa-answer-inner">${q.a}</div>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCards(btn.dataset.cat);
+  });
+});
+
+document.getElementById('expandAll').addEventListener('click', () => {
+  document.querySelectorAll('.qa-card').forEach(c => c.classList.add('open'));
+});
+document.getElementById('collapseAll').addEventListener('click', () => {
+  document.querySelectorAll('.qa-card').forEach(c => c.classList.remove('open'));
+});
+
+renderCards();
+</script>
+</body>
+</html>
